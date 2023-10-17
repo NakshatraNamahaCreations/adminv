@@ -550,3 +550,7 @@ a {
 .vp {
   font-size: 25px;
 }
+.custom-checkbox {
+  width: 30px;
+  height: 30px;
+}

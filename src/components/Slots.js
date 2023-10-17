@@ -18,7 +18,7 @@ function Slots() {
 
   const postcategory = async (e) => {
     e.preventDefault();
-    if (!startTime || !endTime) {
+    if (!startTime ) {
       alert("Please select all fields");
     } else {
       try {
@@ -66,7 +66,7 @@ function Slots() {
       selector: (row) => row.startTime,
       cell: (row) => (
         <div>
-          {row.startTime}-{row.endTime}
+          {row.startTime}
         </div>
       ),
     },
@@ -134,7 +134,7 @@ function Slots() {
                           />
                         </div>
                       </div>
-                      <div className="col-md-4">
+                      {/* <div className="col-md-4">
                         <div className="vhs-input-label">
                           EndTime <span className="text-danger"> *</span>
                         </div>
@@ -145,7 +145,7 @@ function Slots() {
                             onChange={(e) => setendTime(e.target.value)}
                           />
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="col-md-4"></div>
 

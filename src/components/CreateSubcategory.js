@@ -16,11 +16,13 @@ function Subcategory() {
   const [data, setdata] = useState([]);
 
   const [editSubcategoryList, setEditSubcategoryList] = useState({});
-  const [subcategoryName, setSubcayegoryName] = useState("");
-  const [subcategoryList, seSubcategoryList] = useState("");
+  const [subcategoryName, setSubcayegoryName] = useState(editSubcategoryList?.subcategory);
+  const [subcategoryList, seSubcategoryList] = useState(editSubcategoryList?.sub_subcategory);
   const [subcategoryListImage, setSubcategoryListImage] = useState("");
   const [subcategorydata, setsubcategorydata] = useState([]);
   const formdata = new FormData();
+
+  console.log("editSubcategoryList",editSubcategoryList?.sub_subcategory);
 
   const [show, setShow] = useState(false);
 
@@ -85,14 +87,20 @@ function Subcategory() {
   };
 
   const editservices = async (e) => {
+
+   
     e.preventDefault();
     try {
       formdata.append("sub_subcategory", subcategoryList);
       formdata.append("subcategory", subcategoryName);
       formdata.append("resubcatimg", subcategoryListImage);
 
+      if (subcategoryListImage) {
+        formdata.append("resubcatimg", subcategoryListImage);
+      }
+
       const config = {
-        url: `/userapp/editappresubcat/${editSubcategoryList._id}`,
+        url: `/userapp/editappresubcat/${editSubcategoryList?._id}`,
         method: "post",
         baseURL: "http://api.vijayhomeservicebengaluru.in/api",
         headers: { "content-type": "multipart/form-data" },
@@ -109,6 +117,7 @@ function Subcategory() {
       alert("Not Added");
     }
   };
+
   const columns = [
     {
       name: "Sl  No",
@@ -155,6 +164,7 @@ function Subcategory() {
     setdata(data);
     handleShow(true);
   };
+
   useEffect(() => {
     const result = subcategorydata.filter((item) => {
       return item.subcategory.toLowerCase().match(search.toLowerCase());
@@ -178,6 +188,8 @@ function Subcategory() {
         console.log(error.response.data);
       });
   };
+
+
   return (
     <div div className="row">
       <div className="col-md-2">
@@ -297,6 +309,7 @@ function Subcategory() {
                       <select
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setSubcayegoryName(e.target.value)}
+                        defaultValue={editSubcategoryList?.subcategory}
                       >
                         {/* <option value={data.category}>{data.category}</option> */}
                         {subcategories.map((item) => (
@@ -318,11 +331,7 @@ function Subcategory() {
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => seSubcategoryList(e.target.value)}
                       // placeholder={data.subcategory}
-                      defaultValue={
-                        sub_subcategory || editSubcategoryList
-                          ? editSubcategoryList.sub_subcategory
-                          : ""
-                      }
+                      defaultValue={editSubcategoryList?.sub_subcategory}
                     />
                   </div>
                 </div>

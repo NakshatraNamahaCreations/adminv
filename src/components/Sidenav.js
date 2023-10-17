@@ -139,7 +139,7 @@ function Sidenav() {
           </SubMenu>
 
           <MenuItem>
-            Payments and Reports
+            Payment Reports
             <Link to="/Paymentsreports" />
           </MenuItem>
 

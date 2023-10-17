@@ -569,12 +569,7 @@ function Servicedetails() {
     setserviceExcludes(data1);
   };
 
-  // console.log(
-  //   "editServiceIncludes",
-  //   editServiceIncludes,
-  //   editServiceExcludes,
-  //   editDescriptions
-  // );
+ 
 
   const updateService = async (e) => {
     e.preventDefault();

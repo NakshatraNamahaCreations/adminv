@@ -14,7 +14,6 @@ import DataTable from "react-data-table-component";
 import Table from "react-bootstrap/Table";
 import Multiselect from "multiselect-react-dropdown";
 
-
 import { useNavigate } from "react-router-dom";
 
 const onChange = (time, timeString) => {
@@ -46,8 +45,9 @@ function Services() {
   const [NofServiceman, setNofServiceman] = useState("");
   const [Subcategory, setSubcategory] = useState("");
   const [category, setcategory] = useState("");
-  const [Servicesno, setServicesno] = useState("");
+  // const [Servicesno, setServicesno] = useState("");
   const [sAddons, setsAddons] = useState("");
+  const [pricecity, setpricecity] = useState("");
 
   const [Icon, setIcon] = useState("");
   const [Desc, setDesc] = useState("");
@@ -93,7 +93,9 @@ function Services() {
 
   const [showEdit, setShowEdit] = useState(false);
   const [editSubcategory, setEditSubcategory] = useState({});
-
+  const [Servicesno, setServicesno] = useState(
+    new Array(slotsdata.length).fill("")
+  );
   const handleEdit = (subcategory) => {
     setEditSubcategory(subcategory);
     handleShowPopUp(true);
@@ -514,15 +516,24 @@ function Services() {
   const handleSaveChanges = () => {
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
-    // Generate a unique ID for the new data
-    const newId = Date.now(); // You can use a more robust ID generation method if needed
+    // Create an array of objects to store row data and checkbox states
+    const updatedData = slotsdata
+      .map((item, index) => ({
+        id: Date.now() + index, // Unique ID for each row
+        startTime: item.startTime,
+        endTime,
+        slotCity,
+        Servicesno: Servicesno[index],
+        isChecked: checkboxStates[index], // Include the checkbox state
+      }))
+      .filter((item) => item.isChecked);
 
-    // Add new data to the array with the ID
-    const newData = { id: newId, startTime, endTime, slotCity, Servicesno };
-    existingData.push(newData);
+    // Add the updated data to the existing data
+    existingData.push(...updatedData);
 
-    // Update local storage with the updated array
+    // Update local storage with the combined data
     localStorage.setItem("Store_Slots", JSON.stringify(existingData));
+
     handleClose();
   };
 
@@ -558,7 +569,15 @@ function Services() {
     const newId = Date.now(); // You can use a more robust ID generation method if needed
 
     // Add new data to the array
-    const newData = { id:newId,pName, pofferprice, pPrice, pservices, servicePeriod };
+    const newData = {
+      id: newId,
+      pricecity,
+      pName,
+      pofferprice,
+      pPrice,
+      pservices,
+      servicePeriod,
+    };
     morepriceData.push(newData);
     console.log("New Data:", newData);
 
@@ -606,11 +625,23 @@ function Services() {
     // Handle select event
     setsAddons(selectedList);
   };
-  console.log("sAddons",sAddons)
+  console.log("sAddons", sAddons);
 
   const onRemoveCatagory = (selectedList, removedItem) => {
     // Handle remove event
     setsAddons(selectedList);
+  };
+
+  const [isChecked, setIsChecked] = useState(false);
+
+  const [checkboxStates, setCheckboxStates] = useState(
+    Array(slotsdata.length).fill(false)
+  );
+
+  const checkHandler = (index) => {
+    const newCheckboxStates = [...checkboxStates];
+    newCheckboxStates[index] = !newCheckboxStates[index];
+    setCheckboxStates(newCheckboxStates);
   };
   return (
     <div div className="row">
@@ -828,21 +859,26 @@ function Services() {
                                       flexDirection: "row",
                                       flexWrap: "wrap",
                                       // border:"1px solid gray",
-                                      padding:10,marginTop:20
+                                      padding: 10,
+                                      marginTop: 20,
                                     }}
                                   >
                                     {data.map((item) => (
                                       <div
                                         key={item.id}
-                                        style={{ marginRight: "20px",display:"flex" }}
+                                        style={{
+                                          marginRight: "20px",
+                                          display: "flex",
+                                        }}
                                       >
                                         <p className="slots">
-                                          {item.startTime} - {item.endTime}
+                                          {item.startTime} 
                                         </p>
                                         <p
                                           style={{
                                             backgroundColor: "lightblue",
-                                            padding: "10px",
+                                            padding: "5px",
+                                            width:"35px"
                                           }}
                                         >
                                           {item.Servicesno}
@@ -853,6 +889,7 @@ function Services() {
                                             color: "red",
                                             padding: "10px",
                                             cursor: "pointer",
+                                           
                                           }}
                                           onClick={() =>
                                             handleDeleteCity(item.id)
@@ -884,6 +921,7 @@ function Services() {
                         <Table striped bordered hover>
                           <thead>
                             <tr>
+                              <th>City</th>
                               <th>PlanName</th>
                               <th>Price</th>
                               <th>OfferPrice</th>
@@ -894,10 +932,13 @@ function Services() {
                           <tbody>
                             {morepriceData.map((i) => (
                               <tr>
+                                    <td>{i.pricecity}</td>
                                 <td>{i.pName}</td>
+
                                 <td>{i.pPrice}</td>
                                 <td>{i.pofferprice}</td>
                                 <td>{i.pservices}</td>
+                            
                                 <th>{i.servicePeriod}</th>
                               </tr>
                             ))}
@@ -1178,20 +1219,18 @@ function Services() {
                       >
                         <Form.Label className="mt-3">Service AddOns</Form.Label>
                         <InputGroup className="mb-2">
-
-                        <Multiselect
-                          className="mt-3"
-                          options={Servicedata.map((i) => ({
-                            name: i.serviceName,
-                          }))}
-                          placeholder="Select Service"
-                          selectedValues={sAddons}
-                          onSelect={onSelectCatagory}
-                          onRemove={onRemoveCatagory}
-                          displayValue="name"
-                          showCheckbox={true}
-                        />
-                         
+                          <Multiselect
+                            className="mt-3"
+                            options={Servicedata.map((i) => ({
+                              name: i.serviceName,
+                            }))}
+                            placeholder="Select Service"
+                            selectedValues={sAddons}
+                            onSelect={onSelectCatagory}
+                            onRemove={onRemoveCatagory}
+                            displayValue="name"
+                            showCheckbox={true}
+                          />
                         </InputGroup>
                       </Form.Group>
                     </Form>
@@ -1219,41 +1258,6 @@ function Services() {
           <Modal.Title>Add Slots</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>
-            <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>Select StartTime </Form.Label>
-
-              <InputGroup className="mb-2 col-3">
-                <Form.Select
-                  aria-label="startTime"
-                  aria-describedby="basic-addon1"
-                  onChange={(e) => setstartTime(e.target.value)}
-                >
-                  <option>-Select-</option>
-                  {slotsdata.map((i) => (
-                    <option value={i.startTime}>{i.startTime}</option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>Select EndTime </Form.Label>
-
-              <InputGroup className="mb-2 col-3">
-                <Form.Select
-                  aria-label="Username"
-                  aria-describedby="basic-addon1"
-                  onChange={(e) => setendTime(e.target.value)}
-                >
-                  <option>-Select-</option>
-                  {slotsdata.map((i) => (
-                    <option value={i.endTime}>{i.endTime}</option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-          </Row>
-
           <Form.Group as={Col} controlId="formGridState">
             <Form.Label>Select City </Form.Label>
 
@@ -1270,20 +1274,51 @@ function Services() {
               </Form.Select>
             </InputGroup>
           </Form.Group>
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Label>
-              Mention services number <span className="text-danger"> *</span>
-            </Form.Label>
-            <Form.Control
-              type="number"
-              name="Price"
-              placeholder="10 "
-              onChange={(e) => setServicesno(e.target.value)}
-            />
-            <p style={{ marginTop: "10px", fontSize: "12px" }}>
-              <b>Mention the services for slots Example= 10</b>
-            </p>
-          </Form.Group>
+
+          <div className="row">
+            <div
+              className="col-6"
+              style={{
+                marginTop: 20,
+              }}
+            >
+              <h6>StartTime</h6>
+              {slotsdata.map((item, index) => (
+                <div style={{ display: "flex" }}>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id={`checkbox-${index}`} // Add a unique identifier (e.g., index) for each checkbox
+                      checked={checkboxStates[index]} // Use checkboxStates[index] for the checked state
+                      onChange={() => checkHandler(index)} // Pass the index for identifying which checkbox was changed
+                      style={{ width: "30px", height: "50px", padding: "30px" }}
+                      className="custom-checkbox"
+                    />
+                  </div>
+
+                  <div
+                    key={item.id}
+                    style={{
+                      display: "flex",
+                    }}
+                  >
+                    <p className="slots">{item.startTime}</p>
+                  </div>
+                  <input
+                    style={{ width: "80px", height: "35px" }}
+                    type="number"
+                    name="Price"
+                    value={Servicesno[index]} // Use Servicesno[index] for each row
+                    onChange={(e) => {
+                      const newServicesno = [...Servicesno];
+                      newServicesno[index] = e.target.value;
+                      setServicesno(newServicesno);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -1359,6 +1394,23 @@ function Services() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+
+        <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Select City </Form.Label>
+
+            <InputGroup className="mb-2 col-3">
+              <Form.Select
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+                onChange={(e) => setpricecity(e.target.value)}
+              >
+                <option>-Select-</option>
+                {citydata.map((i) => (
+                  <option value={i.city}>{i.city}</option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+          </Form.Group>
           <Form.Group as={Col} controlId="formGridEmail">
             <Form.Label>Plan name</Form.Label>
             <Form.Control

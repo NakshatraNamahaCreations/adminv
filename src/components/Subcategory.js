@@ -395,7 +395,7 @@ function Subcategory() {
                       <select
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setEditCategory(e.target.value)}
-                        defaultValue={data1.id}
+                        defaultValue={editSubcategoryData.category}
                       >
                         {data1.map((item) => (
                           <option key={item.id} value={item.id}>
