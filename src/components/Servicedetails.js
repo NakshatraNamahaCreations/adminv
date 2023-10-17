@@ -72,7 +72,7 @@ function Servicedetails() {
   const [sAddons, setsAddons] = useState(Servicedata[0]?.sAddons || []);
   const [Subcategory, setSubcategory] = useState(Servicedata[0]?.Subcategory);
   const [offerPrice, setofferPrice] = useState(Servicedata[0]?.offerPrice);
-  const [Servicesno, setServicesno] = useState("");
+
   const [Slots, setSlots] = useState("");
   const [Image, setImage] = useState(Servicedata[0]?.serviceImg);
   const [Plans, setPlans] = useState("");
@@ -103,6 +103,10 @@ function Servicedetails() {
   const [titledata, settitledata] = useState([]);
   const [startTime, setstartTime] = useState("");
   const [endTime, setendTime] = useState([]);
+  const [pricecity, setpricecity] = useState("");
+  const [Servicesno, setServicesno] = useState(
+    new Array(slotsdata.length).fill("")
+  );
   // const [descriptions, setDescriptions] = useState("");
 
   // Edit ===================================
@@ -180,7 +184,7 @@ function Servicedetails() {
   const getservicemanagement = async () => {
     try {
       const res = await axios.get(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/getservices`
+        `http://localhost:8080/api/userapp/getservices`
       );
       if (res.status === 200) {
         const serviceData = res.data?.service.filter((i) => i._id === id);
@@ -311,13 +315,13 @@ function Servicedetails() {
   }, []);
 
   const getallcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get("http://localhost:8080/api/userapp/getappsubcat");
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get("http://localhost:8080/api/getcategory");
     if ((res.status = 200)) {
       setcatdata(res.data?.category);
     }
@@ -329,7 +333,7 @@ function Servicedetails() {
 
   const getsubcategory = async () => {
     let res = await axios.post(
-      `http://api.vijayhomeservicebengaluru.in/api/userapp/postappresubcat/`,
+      `http://localhost:8080/api/userapp/postappresubcat/`,
       {
         subcategory: editSubcategory,
       }
@@ -346,7 +350,7 @@ function Servicedetails() {
       const config = {
         url: `/userapp/updateadvanceddata/${id}`,
         method: "post",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "http://localhost:8080/api",
         headers: { "content-type": "application/json" },
         data: {
           plans: [...plandata, ...Servicedata[0]?.plans],
@@ -385,24 +389,34 @@ function Servicedetails() {
   }, []);
 
   const getcity = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/master/getcity");
+    let res = await axios.get("http://localhost:8080/api/master/getcity");
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
     }
   };
 
+ 
   const handleSaveChanges = () => {
-    // Retrieve existing data from local storage or initialize an empty array
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
-    const newId = Date.now();
+    // Create an array of objects to store row data and checkbox states
+    const updatedData = slotsdata
+      .map((item, index) => ({
+        id: Date.now() + index, // Unique ID for each row
+        startTime: item.startTime,
+        endTime,
+        slotCity,
+        Servicesno: Servicesno[index],
+        isChecked: checkboxStates[index], // Include the checkbox state
+      }))
+      .filter((item) => item.isChecked);
 
-    const newData = { id: newId, startTime, endTime, slotCity, Servicesno };
-    existingData.push(newData);
-    console.log("New Data:", newData);
+    // Add the updated data to the existing data
+    existingData.push(...updatedData);
 
-    // Update local storage with the updated array
+    // Update local storage with the combined data
     localStorage.setItem("Store_Slots", JSON.stringify(existingData));
+
     handleClose();
   };
   const handleSaveplans = () => {
@@ -440,7 +454,7 @@ function Servicedetails() {
     const morepriceData = JSON.parse(localStorage.getItem("plansprice")) || [];
 
     // Add new data to the array
-    const newData = { pName, pofferprice, pPrice, pservices, servicePeriod };
+    const newData = {pricecity, pName, pofferprice, pPrice, pservices, servicePeriod };
     morepriceData.push(newData);
     console.log("New Data:", newData);
 
@@ -499,14 +513,14 @@ function Servicedetails() {
   }, []);
 
   const getslots = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
+    let res = await axios.get("http://localhost:8080/api/userapp/getslots");
     if ((res.status = 200)) {
       setslotsdata(res.data?.slots);
     }
   };
 
   const gettitle = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get("http://localhost:8080/api/userapp/gettitle");
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
@@ -517,7 +531,7 @@ function Servicedetails() {
     console.log("slotid", slotid); // Log the slotid directly
     try {
       const response = await axios.delete(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/deleteStoreSlot/${sid}/${slotid}`
+        `http://localhost:8080/api/userapp/deleteStoreSlot/${sid}/${slotid}`
       );
 
       if (response.status === 200) {
@@ -537,7 +551,7 @@ function Servicedetails() {
   const handleDeleteprice = async (id, index) => {
     try {
       const response = await axios.delete(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/deleteprice/${sid}/${id}`
+        `http://localhost:8080/api/userapp/deleteprice/${sid}/${id}`
       );
 
       if (response.status === 200) {
@@ -625,7 +639,7 @@ function Servicedetails() {
       const config = {
         url: `/userapp/updateservices/${serviceId}`,
         method: "put",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "http://localhost:8080/api",
         headers: { "content-type": "multipart/form-data" },
         data: formdata,
       };
@@ -649,6 +663,16 @@ function Servicedetails() {
   const onRemoveCatagory = (selectedList, removedItem) => {
     // Handle remove event
     setsAddons(selectedList);
+  };
+
+  const [checkboxStates, setCheckboxStates] = useState(
+    Array(slotsdata.length).fill(false)
+  );
+
+  const checkHandler = (index) => {
+    const newCheckboxStates = [...checkboxStates];
+    newCheckboxStates[index] = !newCheckboxStates[index];
+    setCheckboxStates(newCheckboxStates);
   };
   return (
     <div div className="row">
@@ -685,7 +709,7 @@ function Servicedetails() {
                   <img src={ServiceImg1} height="150px" />
                 ) : (
                   <img
-                    src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.serviceImg}`}
+                    src={`http://localhost:8080/service/${Servicedata[0]?.serviceImg}`}
                   />
                 )}
 
@@ -817,141 +841,70 @@ function Servicedetails() {
                       ></i>
                       Add Slot's
                     </Button>{" "}
-                    <div>
-                      <table>
-                        <tbody>
-                          <table>
-                            <tbody>
-                              {Servicedata[0]?.store_slots
-                                .reduce((cityGroups, item) => {
-                                  console.log(item);
-                                  // Check if there is an existing group for this city
-                                  const existingGroup = cityGroups.find(
-                                    (group) => group.city === item.slotCity
-                                  );
-
-                                  if (existingGroup) {
-                                    // If a group already exists for this city, add the item to it
-                                    existingGroup.data.push(item);
-                                  } else {
-                                    // If no group exists, create a new one
-                                    cityGroups.push({
-                                      city: item.slotCity,
-                                      data: [item],
-                                    });
-                                  }
-
-                                  return cityGroups;
-                                }, [])
-                                .map((group) => (
-                                  <tr key={group.city}>
-                                    <td>{group.city}</td>
-                                    <td>
+                    <div
+                        style={{
+                          // display: "flex",
+                          gap: "20px",
+                          // flexWrap: "wrap",
+                        }}
+                      >
+                        <table>
+                          <tbody>
+                            {Object.entries(dataByCity).map(([city, data]) => (
+                              <tr key={city}>
+                                <td>{city}</td>
+                                <td>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      flexWrap: "wrap",
+                                      // border:"1px solid gray",
+                                      padding: 10,
+                                      marginTop: 20,
+                                    }}
+                                  >
+                                    {data.map((item) => (
                                       <div
+                                        key={item.id}
                                         style={{
+                                          marginRight: "20px",
                                           display: "flex",
-                                          flexDirection: "row",
-                                          flexWrap: "wrap",
-                                          padding: 10,
-                                          marginTop: 20,
                                         }}
                                       >
-                                        {group.data.map((item) => (
-                                          <div
-                                            key={item.id}
-                                            style={{
-                                              marginRight: "20px",
-                                              display: "flex",
-                                            }}
-                                          >
-                                            <p className="slots">
-                                              {item.startTime} - {item.endTime}
-                                            </p>
-                                            <p
-                                              style={{
-                                                backgroundColor: "lightblue",
-                                                padding: "10px",
-                                              }}
-                                            >
-                                              {item.Servicesno}
-                                            </p>
-                                            <i
-                                              className="fa-solid fa-trash"
-                                              style={{
-                                                color: "red",
-                                                padding: "10px",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() =>
-                                                handleDeleteClick(item.id)
-                                              }
-                                            ></i>
-                                          </div>
-                                        ))}
+                                        <p className="slots">
+                                          {item.startTime} 
+                                        </p>
+                                        <p
+                                          style={{
+                                            backgroundColor: "lightblue",
+                                            padding: "5px",
+                                            width:"35px"
+                                          }}
+                                        >
+                                          {item.Servicesno}
+                                        </p>
+                                        <i
+                                          className="fa-solid fa-trash"
+                                          style={{
+                                            color: "red",
+                                            padding: "10px",
+                                            cursor: "pointer",
+                                           
+                                          }}
+                                          onClick={() =>
+                                            handleDeleteCity(item.id)
+                                          }
+                                        ></i>
                                       </div>
-                                    </td>
-                                  </tr>
-                                ))}
-                            </tbody>
-                          </table>
-                        </tbody>
-                      </table>
-
-                      <table>
-                        <tbody>
-                          {Object.entries(dataByCity).map(([city, data]) => (
-                            <tr key={city}>
-                              <td>{city}</td>
-                              <td>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    // border:"1px solid gray",
-                                    padding: 10,
-                                    marginTop: 20,
-                                  }}
-                                >
-                                  {data.map((item) => (
-                                    <div
-                                      key={item.id}
-                                      style={{
-                                        marginRight: "20px",
-                                        display: "flex",
-                                      }}
-                                    >
-                                      <p className="slots">
-                                        {item.startTime} - {item.endTime}
-                                      </p>
-                                      <p
-                                        style={{
-                                          backgroundColor: "lightblue",
-                                          padding: "10px",
-                                        }}
-                                      >
-                                        {item.Servicesno}
-                                      </p>
-                                      <i
-                                        className="fa-solid fa-trash"
-                                        style={{
-                                          color: "red",
-                                          padding: "10px",
-                                          cursor: "pointer",
-                                        }}
-                                        onClick={() =>
-                                          handleDeleteCity(item.id)
-                                        }
-                                      ></i>
-                                    </div>
-                                  ))}
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                                    ))}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     <Button
                       variant="light"
                       className="mb-3"
@@ -969,6 +922,7 @@ function Servicedetails() {
                       <Table striped bordered hover>
                         <thead>
                           <tr>
+                          <th>City</th>
                             <th>PlanName</th>
                             <th>Price</th>
                             <th>OfferPrice</th>
@@ -980,6 +934,7 @@ function Servicedetails() {
                         <tbody>
                           {Servicedata[0]?.morepriceData.map((i, index) => (
                             <tr>
+                               <td>{i.pricecity}</td>
                               <td>{i.pName}</td>
                               <td>{i.pPrice}</td>
                               <td>{i.pofferprice}</td>
@@ -1002,6 +957,7 @@ function Servicedetails() {
                           ))}
                           {morepriceData.map((i, index) => (
                             <tr>
+                               <td>{i.pricecity}</td>
                               <td>{i.pName}</td>
                               <td>{i.pPrice}</td>
                               <td>{i.pofferprice}</td>
@@ -1158,7 +1114,7 @@ function Servicedetails() {
                         </span>
                         <img
                           style={{ width: "15px", height: "15px" }}
-                          src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Desimg}`}
+                          src={`http://localhost:8080/service/${Servicedata[0]?.Desimg}`}
                         />
                         {/* {editServiceIncludes?.serviceIncludes.map((i) => ( */}
                         {editServiceIncludes.map((include, index) => (
@@ -1219,7 +1175,7 @@ function Servicedetails() {
                         </span>
                         <img
                           style={{ width: "15px", height: "15px" }}
-                          src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Inimg}`}
+                          src={`http://localhost:8080/service/${Servicedata[0]?.Inimg}`}
                         />
                         {/* {Servicedata[0]?.serviceExcludes.map((i) => ( */}
                         {editServiceExcludes.map((excludes, index) => (
@@ -1368,40 +1324,6 @@ function Servicedetails() {
           <Modal.Title>Add Slots</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>
-            <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>Select StartTime </Form.Label>
-
-              <InputGroup className="mb-2 col-3">
-                <Form.Select
-                  aria-label="startTime"
-                  aria-describedby="basic-addon1"
-                  onChange={(e) => setstartTime(e.target.value)}
-                >
-                  <option>-Select-</option>
-                  {slotsdata.map((i) => (
-                    <option value={i.startTime}>{i.startTime}</option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridState">
-              <Form.Label>Select EndTime </Form.Label>
-
-              <InputGroup className="mb-2 col-3">
-                <Form.Select
-                  aria-label="Username"
-                  aria-describedby="basic-addon1"
-                  onChange={(e) => setendTime(e.target.value)}
-                >
-                  <option>-Select-</option>
-                  {slotsdata.map((i) => (
-                    <option value={i.endTime}>{i.endTime}</option>
-                  ))}
-                </Form.Select>
-              </InputGroup>
-            </Form.Group>
-          </Row>
           <Form.Group as={Col} controlId="formGridState">
             <Form.Label>Select City </Form.Label>
 
@@ -1419,20 +1341,50 @@ function Servicedetails() {
             </InputGroup>
           </Form.Group>
 
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Label>
-              Mention services number <span className="text-danger"> *</span>
-            </Form.Label>
-            <Form.Control
-              type="number"
-              name="Price"
-              defaultValue="10 "
-              onChange={(e) => setServicesno(e.target.value)}
-            />
-            <p style={{ marginTop: "10px", fontSize: "12px" }}>
-              <b>Mention the services for slots Example= 10</b>
-            </p>
-          </Form.Group>
+          <div className="row">
+            <div
+              className="col-6"
+              style={{
+                marginTop: 20,
+              }}
+            >
+              <h6>StartTime</h6>
+              {slotsdata.map((item, index) => (
+                <div style={{ display: "flex" }}>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id={`checkbox-${index}`} // Add a unique identifier (e.g., index) for each checkbox
+                      checked={checkboxStates[index]} // Use checkboxStates[index] for the checked state
+                      onChange={() => checkHandler(index)} // Pass the index for identifying which checkbox was changed
+                      style={{ width: "30px", height: "50px", padding: "30px" }}
+                      className="custom-checkbox"
+                    />
+                  </div>
+
+                  <div
+                    key={item.id}
+                    style={{
+                      display: "flex",
+                    }}
+                  >
+                    <p className="slots">{item.startTime}</p>
+                  </div>
+                  <input
+                    style={{ width: "80px", height: "35px" }}
+                    type="number"
+                    name="Price"
+                    value={Servicesno[index]} // Use Servicesno[index] for each row
+                    onChange={(e) => {
+                      const newServicesno = [...Servicesno];
+                      newServicesno[index] = e.target.value;
+                      setServicesno(newServicesno);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -1476,6 +1428,22 @@ function Servicedetails() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Select City </Form.Label>
+
+            <InputGroup className="mb-2 col-3">
+              <Form.Select
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+                onChange={(e) => setpricecity(e.target.value)}
+              >
+                <option>-Select-</option>
+                {citydata.map((i) => (
+                  <option value={i.city}>{i.city}</option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+          </Form.Group>
           <Form.Group as={Col} controlId="formGridEmail">
             <Form.Label>
               Select Plans <span className="text-danger"> *</span>
@@ -1538,6 +1506,22 @@ function Servicedetails() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <Form.Group as={Col} controlId="formGridState">
+            <Form.Label>Select City </Form.Label>
+
+            <InputGroup className="mb-2 col-3">
+              <Form.Select
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+                onChange={(e) => setpricecity(e.target.value)}
+              >
+                <option>-Select-</option>
+                {citydata.map((i) => (
+                  <option value={i.city}>{i.city}</option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+          </Form.Group>
           <Form.Group as={Col} controlId="formGridEmail">
             <Form.Label>Plan name</Form.Label>
             <Form.Control
