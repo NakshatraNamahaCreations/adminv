@@ -28,7 +28,7 @@ function Services() {
   const morepriceData = JSON.parse(localStorage.getItem("plansprice")) || [];
 
   const navigate = useNavigate();
-
+const [postsubdata, setpostsubdata] = useState([]);
   const [citydata, setcitydata] = useState([]);
   const [selected, setSelected] = useState(false);
   const [categorydata, setcategorydata] = useState([]);
@@ -82,6 +82,7 @@ function Services() {
   const [catdata, setcatdata] = useState([]);
   const formdata = new FormData();
   const [data, setdata] = useState([]);
+  const [rating, setrating] = useState("");
 
   const [editCatagoryName, setEditCatagoryName] = useState("");
   const [editSubcategoryName, setEditSubcategoryName] = useState("");
@@ -292,6 +293,7 @@ function Services() {
       formdata.append("serviceHour", ServiceHour);
       formdata.append("serviceDesc", JSON.stringify(desc));
       formdata.append("serviceGst", ServiceGst);
+      formdata.append("rating", rating);
       formdata.append("NofServiceman", NofServiceman);
       formdata.append("sAddons", JSON.stringify(sAddons));
 
@@ -433,6 +435,24 @@ function Services() {
     handleShow(true);
   };
 
+
+  useEffect(() => {
+    postsubcategory();
+  }, [category]);
+
+  const postsubcategory = async () => {
+    let res = await axios.post(
+      `http://api.vijayhomeservicebengaluru.in/api/userapp/postappsubcat/`,
+      {
+        category: category,
+      }
+    );
+
+    if ((res.status = 200)) {
+      setpostsubdata(res.data?.subcategory);
+      
+    }
+  };
   useEffect(() => {
     getcity();
   }, []);
@@ -447,6 +467,7 @@ function Services() {
   const addadvacedata = async (e) => {
     e.preventDefault();
 
+    console.log("existingData",existingData)
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${serID}`,
@@ -464,7 +485,7 @@ function Services() {
       };
       await axios(config).then(function (response) {
         if (response.status === 200) {
-          localStorage.removeItem("Store_Slots");
+          // localStorage.removeItem("Store_Slots");
           localStorage.removeItem("plansprice");
           localStorage.removeItem("plansdeatils");
 
@@ -551,16 +572,16 @@ function Services() {
   };
 
   const handleSaveplans2 = () => {
-    const homepagetitleData =
-      JSON.parse(localStorage.getItem("homepagetitle")) || [];
-    console.log("Existing Data:", existingData);
+    // const homepagetitleData =
+    //   JSON.parse(localStorage.getItem("homepagetitle")) || [];
+    // console.log("Existing Data:", existingData);
 
-    // Add new data to the array
-    const newData = { titleName };
-    homepagetitleData.push(newData);
+    // // Add new data to the array
+    // const newData = { titleName };
+    // homepagetitleData.push(newData);
 
-    // Update local storage with the updated array
-    localStorage.setItem("homepagetitle", JSON.stringify(homepagetitleData));
+    // // Update local storage with the updated array
+    // localStorage.setItem("homepagetitle", JSON.stringify(homepagetitleData));
     handleClose2();
   };
 
@@ -759,7 +780,7 @@ function Services() {
                       onChange={(e) => setSubcategory(e.target.value)}
                     >
                       <option>-Select Subcategory-</option>
-                      {categorydata.map((item) => (
+                      {postsubdata.map((item) => (
                         <option value={item.subcategory}>
                           {item.subcategory}
                         </option>
@@ -872,13 +893,13 @@ function Services() {
                                         }}
                                       >
                                         <p className="slots">
-                                          {item.startTime} 
+                                          {item.startTime}
                                         </p>
                                         <p
                                           style={{
                                             backgroundColor: "lightblue",
                                             padding: "5px",
-                                            width:"35px"
+                                            width: "35px",
                                           }}
                                         >
                                           {item.Servicesno}
@@ -889,7 +910,6 @@ function Services() {
                                             color: "red",
                                             padding: "10px",
                                             cursor: "pointer",
-                                           
                                           }}
                                           onClick={() =>
                                             handleDeleteCity(item.id)
@@ -932,13 +952,13 @@ function Services() {
                           <tbody>
                             {morepriceData.map((i) => (
                               <tr>
-                                    <td>{i.pricecity}</td>
+                                <td>{i.pricecity}</td>
                                 <td>{i.pName}</td>
 
                                 <td>{i.pPrice}</td>
                                 <td>{i.pofferprice}</td>
                                 <td>{i.pservices}</td>
-                            
+
                                 <th>{i.servicePeriod}</th>
                               </tr>
                             ))}
@@ -1154,23 +1174,6 @@ function Services() {
                       </Row>
 
                       <Row>
-                        <Form.Group as={Col} controlId="formGridEmail">
-                          <Form.Label className="mt-3">
-                            Home page title{" "}
-                          </Form.Label>
-                          <InputGroup className="mb-2">
-                            <Form.Select
-                              aria-label="Username"
-                              aria-describedby="basic-addon1"
-                              onChange={(e) => sethomePagetitle(e.target.value)}
-                            >
-                              <option>--Select title name--</option>
-                              {titledata.map((item) => (
-                                <option value={item.title}>{item.title}</option>
-                              ))}
-                            </Form.Select>
-                          </InputGroup>
-                        </Form.Group>
                         <Form.Group as={Col} controlId="formGridState">
                           <Form.Label className="mt-3">
                             Select Services redirection{" "}
@@ -1211,28 +1214,16 @@ function Services() {
                             <option value="22%">22%</option>
                           </Form.Select>
                         </Form.Group>
-                      </Row>
-                      <Form.Group
-                        as={Col}
-                        controlId="formGridEmail"
-                        style={{ width: 320 }}
-                      >
-                        <Form.Label className="mt-3">Service AddOns</Form.Label>
-                        <InputGroup className="mb-2">
-                          <Multiselect
-                            className="mt-3"
-                            options={Servicedata.map((i) => ({
-                              name: i.serviceName,
-                            }))}
-                            placeholder="Select Service"
-                            selectedValues={sAddons}
-                            onSelect={onSelectCatagory}
-                            onRemove={onRemoveCatagory}
-                            displayValue="name"
-                            showCheckbox={true}
+
+                        <Form.Group as={Col} controlId="formGridEmail" className="mt-3">
+                          <Form.Label>Rating</Form.Label>
+                          <Form.Control
+                            type="text"
+                            name="Price"
+                            onChange={(e) => setrating(e.target.value)}
                           />
-                        </InputGroup>
-                      </Form.Group>
+                        </Form.Group>
+                      </Row>
                     </Form>
                     <Button type="button" variant="outline-primary">
                       Cancel
@@ -1394,8 +1385,7 @@ function Services() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-
-        <Form.Group as={Col} controlId="formGridState">
+          <Form.Group as={Col} controlId="formGridState">
             <Form.Label>Select City </Form.Label>
 
             <InputGroup className="mb-2 col-3">

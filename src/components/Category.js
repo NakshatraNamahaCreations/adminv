@@ -14,19 +14,20 @@ function Category() {
   const [search, setsearch] = useState("");
   const [filterdata, setfilterdata] = useState([]);
   const [editCatagoryData, setEditCatagoryData] = useState({});
-  const [editCatagoryName, setEditCatagoryName] = useState("");
+  const [editCatagoryName, setEditCatagoryName] = useState(
+    ""
+  );
   const [editCatagoryImg, setEditCatagoryImage] = useState("");
   const formdata = new FormData();
-
+// console.log("editCatagoryData._id",editCatagoryData._id)
   const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   const handleEdit = (subcategory) => {
     setEditCatagoryData(subcategory);
     handleShow(true);
   };
+  const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
   const postcategory = async (e) => {
     e.preventDefault();
@@ -84,7 +85,7 @@ function Category() {
       const catagoryId = editCatagoryData._id;
       const config = {
         url: `/editcategory/${catagoryId}`,
-        method: "post",
+        method: "put",
         baseURL: "http://api.vijayhomeservicebengaluru.in/api",
         data: formdata,
         headers: {
@@ -119,7 +120,7 @@ function Category() {
     },
     {
       name: "Category image",
-      cell: (row) => (
+      selector: (row) => (
         <div>
           <img
             src={`http://api.vijayhomeservicebengaluru.in/category/${row.categoryImg}`}
@@ -131,11 +132,14 @@ function Category() {
     },
     {
       name: "Action",
-      cell: (row) => (
+      selector: (row) => (
         <div>
-          <a className="hyperlink" onClick={() => handleEdit(row)}>
+          <span>
+
+      
+          <i className="hyperlink" onClick={() => handleEdit(row)}>
             Edit |
-          </a>
+          </i>    </span>
           <a onClick={() => deletecategory(row._id)} className="hyperlink mx-1">
             Delete
           </a>
@@ -274,11 +278,7 @@ function Category() {
                       type="text"
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setEditCatagoryName(e.target.value)}
-                      defaultValue={
-                        editCatagoryName || editCatagoryData
-                          ? editCatagoryData.category
-                          : ""
-                      }
+                      defaultValue={editCatagoryData?.category}
                     />
                   </div>
                 </div>

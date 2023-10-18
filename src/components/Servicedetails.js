@@ -89,7 +89,7 @@ function Servicedetails() {
   const [serviceExcludes, setserviceExcludes] = useState(
     Servicedata[0]?.serviceExcludes
   );
-  const [quantity, setquantity] = useState(Servicedata[0]?.quantity);
+const [postsubdata, setpostsubdata] = useState([]);
   const [pName, setpName] = useState("");
   const [pPrice, setpPrice] = useState("");
   const [pofferprice, setpofferprice] = useState("");
@@ -328,8 +328,26 @@ function Servicedetails() {
   };
 
   useEffect(() => {
+    postsubcategory();
+  }, [editCategory]);
+
+  const postsubcategory = async () => {
+    let res = await axios.post(
+      `http://api.vijayhomeservicebengaluru.in/api/userapp/postappsubcat/`,
+      {
+        category: editCategory,
+      }
+    );
+
+    if ((res.status = 200)) {
+      setpostsubdata(res.data?.subcategory);
+      
+    }
+  };
+  useEffect(() => {
     getsubcategory();
   }, [editSubcategory]);
+
 
   const getsubcategory = async () => {
     let res = await axios.post(
@@ -346,6 +364,7 @@ function Servicedetails() {
   };
 
   const addadvacedata = async () => {
+    console.log("existingData------",[...existingData, ...Servicedata[0]?.store_slots])
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${id}`,
@@ -370,8 +389,8 @@ function Servicedetails() {
         localStorage.removeItem("plansprice");
 
         setserID("");
-        handelsavebtn();
-        window.location.reload();
+        // handelsavebtn();
+        // window.location.reload();
         // Clear localStorage and perform other necessary actions
       } else {
         console.log("Data update failed");
@@ -395,7 +414,6 @@ function Servicedetails() {
     }
   };
 
- 
   const handleSaveChanges = () => {
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
@@ -454,7 +472,14 @@ function Servicedetails() {
     const morepriceData = JSON.parse(localStorage.getItem("plansprice")) || [];
 
     // Add new data to the array
-    const newData = {pricecity, pName, pofferprice, pPrice, pservices, servicePeriod };
+    const newData = {
+      pricecity,
+      pName,
+      pofferprice,
+      pPrice,
+      pservices,
+      servicePeriod,
+    };
     morepriceData.push(newData);
     console.log("New Data:", newData);
 
@@ -583,8 +608,6 @@ function Servicedetails() {
     setserviceExcludes(data1);
   };
 
- 
-
   const updateService = async (e) => {
     e.preventDefault();
     try {
@@ -674,6 +697,8 @@ function Servicedetails() {
     newCheckboxStates[index] = !newCheckboxStates[index];
     setCheckboxStates(newCheckboxStates);
   };
+
+  console.log("Servicedata[0]?.category", Servicedata[0]?.category);
   return (
     <div div className="row">
       <div className="col-md-2">
@@ -739,10 +764,13 @@ function Servicedetails() {
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                     onChange={(e) => setEditCategory(e.target.value)}
+                    defaultValue={Servicedata[0]?.category}
                   >
-                    <option>{Servicedata[0]?.category}</option>
+                    {/* <option>{Servicedata[0]?.Subcategory}</option> */}
                     {catdata.map((item) => (
-                      <option value={item.category}>{item.category}</option>
+                      <option value={item.category}>
+                        {item.category}
+                      </option>
                     ))}
                   </Form.Select>
                 </InputGroup>
@@ -754,9 +782,10 @@ function Servicedetails() {
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                     onChange={(e) => setEditSubcategory(e.target.value)}
+                    defaultValue={Servicedata[0]?.Subcategory}
                   >
-                    <option>{Servicedata[0]?.Subcategory}</option>
-                    {categorydata.map((item) => (
+                    {/* <option>{Servicedata[0]?.Subcategory}</option> */}
+                    {postsubdata.map((item) => (
                       <option value={item.subcategory}>
                         {item.subcategory}
                       </option>
@@ -773,16 +802,13 @@ function Servicedetails() {
                   >
                     <option>--Select--</option>
                     {postservicename.map((item) => (
-                      <option value={item.subcategory}>
-                        {item.subcategory}
+                      <option value={item.sub_subcategory}>
+                        {item.sub_subcategory}
                       </option>
                     ))}
                   </Form.Select>
                 </InputGroup>
-                {/* <div style={{ color: "#FF0060", textAlign: "end" }}>
-                  <i class="fa-regular fa-plus"></i>
-                  create category
-                </div> */}
+
                 <Form.Label>Service duration</Form.Label>
                 <InputGroup className="mb-3">
                   <Form.Control
@@ -842,69 +868,144 @@ function Servicedetails() {
                       Add Slot's
                     </Button>{" "}
                     <div
-                        style={{
-                          // display: "flex",
-                          gap: "20px",
-                          // flexWrap: "wrap",
-                        }}
-                      >
-                        <table>
-                          <tbody>
-                            {Object.entries(dataByCity).map(([city, data]) => (
-                              <tr key={city}>
-                                <td>{city}</td>
-                                <td>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      flexWrap: "wrap",
-                                      // border:"1px solid gray",
-                                      padding: 10,
-                                      marginTop: 20,
-                                    }}
-                                  >
-                                    {data.map((item) => (
+                      style={{
+                        // display: "flex",
+                        gap: "20px",
+                        // flexWrap: "wrap",
+                      }}
+                    >
+                         <table>
+                        <tbody>
+                          <table>
+                            <tbody>
+                              {Servicedata[0]?.store_slots
+                                .reduce((cityGroups, item) => {
+                                  console.log(item);
+                                  // Check if there is an existing group for this city
+                                  const existingGroup = cityGroups.find(
+                                    (group) => group.city === item.slotCity
+                                  );
+
+                                  if (existingGroup) {
+                                    // If a group already exists for this city, add the item to it
+                                    existingGroup.data.push(item);
+                                  } else {
+                                    // If no group exists, create a new one
+                                    cityGroups.push({
+                                      city: item.slotCity,
+                                      data: [item],
+                                    });
+                                  }
+
+                                  return cityGroups;
+                                }, [])
+                                .map((group) => (
+                                  <tr key={group.city}>
+                                    <td>{group.city}</td>
+                                    <td>
                                       <div
-                                        key={item.id}
                                         style={{
-                                          marginRight: "20px",
                                           display: "flex",
+                                          flexDirection: "row",
+                                          flexWrap: "wrap",
+                                          padding: 10,
+                                          marginTop: 20,
                                         }}
                                       >
-                                        <p className="slots">
-                                          {item.startTime} 
-                                        </p>
-                                        <p
-                                          style={{
-                                            backgroundColor: "lightblue",
-                                            padding: "5px",
-                                            width:"35px"
-                                          }}
-                                        >
-                                          {item.Servicesno}
-                                        </p>
-                                        <i
-                                          className="fa-solid fa-trash"
-                                          style={{
-                                            color: "red",
-                                            padding: "10px",
-                                            cursor: "pointer",
-                                           
-                                          }}
-                                          onClick={() =>
-                                            handleDeleteCity(item.id)
-                                          }
-                                        ></i>
+                                        {group.data.map((item) => (
+                                          <div
+                                            key={item.id}
+                                            style={{
+                                              marginRight: "20px",
+                                              display: "flex",
+                                            }}
+                                          >
+                                            <p className="slots">
+                                              {item.startTime} - {item.endTime}
+                                            </p>
+                                            <p
+                                              style={{
+                                                backgroundColor: "lightblue",
+                                                padding: "10px",
+                                              }}
+                                            >
+                                              {item.Servicesno}
+                                            </p>
+                                            <i
+                                              className="fa-solid fa-trash"
+                                              style={{
+                                                color: "red",
+                                                padding: "10px",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                handleDeleteClick(item.id)
+                                              }
+                                            ></i>
+                                          </div>
+                                        ))}
                                       </div>
-                                    ))}
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </tbody>
+                      </table>
+                      <table>
+                        <tbody>
+                          {Object.entries(dataByCity).map(([city, data]) => (
+                            <tr key={city}>
+                              <td>{city}</td>
+                              <td>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    // border:"1px solid gray",
+                                    padding: 10,
+                                    marginTop: 20,
+                                  }}
+                                >
+                                  {data.map((item) => (
+                                    <div
+                                      key={item.id}
+                                      style={{
+                                        marginRight: "20px",
+                                        display: "flex",
+                                      }}
+                                    >
+                                      <p className="slots">{item.startTime}</p>
+                                      <p
+                                        style={{
+                                          backgroundColor: "lightblue",
+                                          padding: "5px",
+                                          width: "35px",
+                                        }}
+                                      >
+                                        {item.Servicesno}
+                                      </p>
+                                      <i
+                                        className="fa-solid fa-trash"
+                                        style={{
+                                          color: "red",
+                                          padding: "10px",
+                                          cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                          handleDeleteCity(item.id)
+                                        }
+                                      ></i>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                     <Button
                       variant="light"
                       className="mb-3"
@@ -922,7 +1023,7 @@ function Servicedetails() {
                       <Table striped bordered hover>
                         <thead>
                           <tr>
-                          <th>City</th>
+                            <th>City</th>
                             <th>PlanName</th>
                             <th>Price</th>
                             <th>OfferPrice</th>
@@ -934,7 +1035,7 @@ function Servicedetails() {
                         <tbody>
                           {Servicedata[0]?.morepriceData.map((i, index) => (
                             <tr>
-                               <td>{i.pricecity}</td>
+                              <td>{i.pricecity}</td>
                               <td>{i.pName}</td>
                               <td>{i.pPrice}</td>
                               <td>{i.pofferprice}</td>
@@ -957,7 +1058,7 @@ function Servicedetails() {
                           ))}
                           {morepriceData.map((i, index) => (
                             <tr>
-                               <td>{i.pricecity}</td>
+                              <td>{i.pricecity}</td>
                               <td>{i.pName}</td>
                               <td>{i.pPrice}</td>
                               <td>{i.pofferprice}</td>
@@ -1237,14 +1338,9 @@ function Servicedetails() {
                             onChange={(e) =>
                               setEditServiceDirection(e.target.value)
                             }
+                            defaultValue={Servicedata[0]?.serviceDirection}
                           >
-                            {Servicedata[0]?.serviceDirection ? (
-                              <option>
-                                {Servicedata[0]?.serviceDirection}
-                              </option>
-                            ) : (
-                              <option>--select --</option>
-                            )}
+                            <option>--select --</option>
 
                             <option value="Enquiry">Enquiry</option>
                             <option value="Survey">Survey</option>
@@ -1428,7 +1524,7 @@ function Servicedetails() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form.Group as={Col} controlId="formGridState">
+          <Form.Group as={Col} controlId="formGridState">
             <Form.Label>Select City </Form.Label>
 
             <InputGroup className="mb-2 col-3">
@@ -1506,7 +1602,7 @@ function Servicedetails() {
           <Modal.Title>Add</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <Form.Group as={Col} controlId="formGridState">
+          <Form.Group as={Col} controlId="formGridState">
             <Form.Label>Select City </Form.Label>
 
             <InputGroup className="mb-2 col-3">

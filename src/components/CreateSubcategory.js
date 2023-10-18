@@ -16,13 +16,18 @@ function Subcategory() {
   const [data, setdata] = useState([]);
 
   const [editSubcategoryList, setEditSubcategoryList] = useState({});
-  const [subcategoryName, setSubcayegoryName] = useState(editSubcategoryList?.subcategory);
-  const [subcategoryList, seSubcategoryList] = useState(editSubcategoryList?.sub_subcategory);
+  const [subcategoryName, setSubcayegoryName] = useState(
+    // editSubcategoryList?.subcategory
+    ""
+  );
+  const [subcategoryList, seSubcategoryList] = useState(
+    "" // editSubcategoryList?.sub_subcategory
+  );
   const [subcategoryListImage, setSubcategoryListImage] = useState("");
   const [subcategorydata, setsubcategorydata] = useState([]);
   const formdata = new FormData();
 
-  console.log("editSubcategoryList",editSubcategoryList?.sub_subcategory);
+  console.log("editSubcategoryList", editSubcategoryList?._id);
 
   const [show, setShow] = useState(false);
 
@@ -87,14 +92,10 @@ function Subcategory() {
   };
 
   const editservices = async (e) => {
-
-   
     e.preventDefault();
     try {
       formdata.append("sub_subcategory", subcategoryList);
       formdata.append("subcategory", subcategoryName);
-      formdata.append("resubcatimg", subcategoryListImage);
-
       if (subcategoryListImage) {
         formdata.append("resubcatimg", subcategoryListImage);
       }
@@ -188,7 +189,6 @@ function Subcategory() {
         console.log(error.response.data);
       });
   };
-
 
   return (
     <div div className="row">
