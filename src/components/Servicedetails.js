@@ -15,7 +15,6 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import Table from "react-bootstrap/Table";
 
-
 function Servicedetails() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -49,7 +48,7 @@ function Servicedetails() {
   const [citydata, setcitydata] = useState([]);
   const [category, setcategory] = useState("");
   const [catdata, setcatdata] = useState([]);
-
+const [rating, setrating] = useState("");
   const [postservicename, setpostservicename] = useState([]);
   const [filterdata, setfilterdata] = useState([]);
   const [ServiceImg, setServiceImg] = useState("");
@@ -88,7 +87,7 @@ function Servicedetails() {
   const [serviceExcludes, setserviceExcludes] = useState(
     Servicedata[0]?.serviceExcludes
   );
-const [postsubdata, setpostsubdata] = useState([]);
+  const [postsubdata, setpostsubdata] = useState([]);
   const [pName, setpName] = useState("");
   const [pPrice, setpPrice] = useState("");
   const [pofferprice, setpofferprice] = useState("");
@@ -314,13 +313,17 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getallcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat"
+    );
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/getcategory"
+    );
     if ((res.status = 200)) {
       setcatdata(res.data?.category);
     }
@@ -340,13 +343,11 @@ const [postsubdata, setpostsubdata] = useState([]);
 
     if ((res.status = 200)) {
       setpostsubdata(res.data?.subcategory);
-      
     }
   };
   useEffect(() => {
     getsubcategory();
   }, [editSubcategory]);
-
 
   const getsubcategory = async () => {
     let res = await axios.post(
@@ -363,7 +364,10 @@ const [postsubdata, setpostsubdata] = useState([]);
   };
 
   const addadvacedata = async () => {
-    console.log("existingData------",[...existingData, ...Servicedata[0]?.store_slots])
+    console.log("existingData------", [
+      ...existingData,
+      ...Servicedata[0]?.store_slots,
+    ]);
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${id}`,
@@ -407,7 +411,9 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getcity = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/master/getcity");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/master/getcity"
+    );
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
     }
@@ -537,14 +543,18 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getslots = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getslots"
+    );
     if ((res.status = 200)) {
       setslotsdata(res.data?.slots);
     }
   };
 
   const gettitle = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle"
+    );
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
@@ -616,7 +626,7 @@ const [postsubdata, setpostsubdata] = useState([]);
       formdata.append("Subcategory", editSubcategory);
       formdata.append("sub_subcategory", editSubcategoryList);
       formdata.append("serviceName", editServiceName);
-
+      formdata.append("rating", rating);
       formdata.append("sAddons", JSON.stringify(sAddons));
 
       editDescriptions.map((desc) =>
@@ -767,9 +777,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                   >
                     {/* <option>{Servicedata[0]?.Subcategory}</option> */}
                     {catdata.map((item) => (
-                      <option value={item.category}>
-                        {item.category}
-                      </option>
+                      <option value={item.category}>{item.category}</option>
                     ))}
                   </Form.Select>
                 </InputGroup>
@@ -873,7 +881,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                         // flexWrap: "wrap",
                       }}
                     >
-                         <table>
+                      <table>
                         <tbody>
                           <table>
                             <tbody>
@@ -1366,6 +1374,18 @@ const [postsubdata, setpostsubdata] = useState([]);
                           <option value="0.18">18%</option>
                           <option value="0.22">22%</option>
                         </Form.Select>
+                      </Form.Group>
+                      <Form.Group
+                        as={Col}
+                        controlId="formGridEmail"
+                        className="mt-3"
+                      >
+                        <Form.Label>Rating</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="Price"
+                          onChange={(e) => setrating(e.target.value)}
+                        />
                       </Form.Group>
                     </Row>
                     {/* <Form.Group
