@@ -5,7 +5,7 @@ import Header from "./Header";
 import Sidenav from "./Sidenav";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Offcanvas from "react-bootstrap/Offcanvas";
+
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -14,8 +14,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import Table from "react-bootstrap/Table";
-import { Settings } from "@mui/icons-material";
-import Multiselect from "multiselect-react-dropdown";
+
 
 function Servicedetails() {
   const navigate = useNavigate();
@@ -184,7 +183,7 @@ const [postsubdata, setpostsubdata] = useState([]);
   const getservicemanagement = async () => {
     try {
       const res = await axios.get(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/getservices`
+        `https://api.vijayhomeservicebengaluru.in/api/userapp/getservices`
       );
       if (res.status === 200) {
         const serviceData = res.data?.service.filter((i) => i._id === id);
@@ -315,13 +314,13 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getallcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
     if ((res.status = 200)) {
       setcatdata(res.data?.category);
     }
@@ -333,7 +332,7 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const postsubcategory = async () => {
     let res = await axios.post(
-      `http://api.vijayhomeservicebengaluru.in/api/userapp/postappsubcat/`,
+      `https://api.vijayhomeservicebengaluru.in/api/userapp/postappsubcat/`,
       {
         category: editCategory,
       }
@@ -351,7 +350,7 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const getsubcategory = async () => {
     let res = await axios.post(
-      `http://api.vijayhomeservicebengaluru.in/api/userapp/postappresubcat/`,
+      `https://api.vijayhomeservicebengaluru.in/api/userapp/postappresubcat/`,
       {
         subcategory: editSubcategory,
       }
@@ -369,7 +368,7 @@ const [postsubdata, setpostsubdata] = useState([]);
       const config = {
         url: `/userapp/updateadvanceddata/${id}`,
         method: "post",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "https://api.vijayhomeservicebengaluru.in/api",
         headers: { "content-type": "application/json" },
         data: {
           plans: [...plandata, ...Servicedata[0]?.plans],
@@ -408,7 +407,7 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getcity = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/master/getcity");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/master/getcity");
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
     }
@@ -538,14 +537,14 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getslots = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
     if ((res.status = 200)) {
       setslotsdata(res.data?.slots);
     }
   };
 
   const gettitle = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
@@ -556,7 +555,7 @@ const [postsubdata, setpostsubdata] = useState([]);
     console.log("slotid", slotid); // Log the slotid directly
     try {
       const response = await axios.delete(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/deleteStoreSlot/${sid}/${slotid}`
+        `https://api.vijayhomeservicebengaluru.in/api/userapp/deleteStoreSlot/${sid}/${slotid}`
       );
 
       if (response.status === 200) {
@@ -576,7 +575,7 @@ const [postsubdata, setpostsubdata] = useState([]);
   const handleDeleteprice = async (id, index) => {
     try {
       const response = await axios.delete(
-        `http://api.vijayhomeservicebengaluru.in/api/userapp/deleteprice/${sid}/${id}`
+        `https://api.vijayhomeservicebengaluru.in/api/userapp/deleteprice/${sid}/${id}`
       );
 
       if (response.status === 200) {
@@ -662,7 +661,7 @@ const [postsubdata, setpostsubdata] = useState([]);
       const config = {
         url: `/userapp/updateservices/${serviceId}`,
         method: "put",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "https://api.vijayhomeservicebengaluru.in/api",
         headers: { "content-type": "multipart/form-data" },
         data: formdata,
       };
@@ -734,7 +733,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                   <img src={ServiceImg1} height="150px" />
                 ) : (
                   <img
-                    src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.serviceImg}`}
+                    src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.serviceImg}`}
                   />
                 )}
 
@@ -1215,7 +1214,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                         </span>
                         <img
                           style={{ width: "15px", height: "15px" }}
-                          src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Desimg}`}
+                          src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Desimg}`}
                         />
                         {/* {editServiceIncludes?.serviceIncludes.map((i) => ( */}
                         {editServiceIncludes.map((include, index) => (
@@ -1276,7 +1275,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                         </span>
                         <img
                           style={{ width: "15px", height: "15px" }}
-                          src={`http://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Inimg}`}
+                          src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Inimg}`}
                         />
                         {/* {Servicedata[0]?.serviceExcludes.map((i) => ( */}
                         {editServiceExcludes.map((excludes, index) => (

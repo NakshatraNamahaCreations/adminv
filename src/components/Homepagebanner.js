@@ -40,7 +40,7 @@ function Homepagebanner() {
       const config = {
         url: "/userapp/addhomebanner",
         method: "post",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "https://api.vijayhomeservicebengaluru.in/api",
 
         data: formdata,
       };
@@ -60,7 +60,7 @@ function Homepagebanner() {
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
     if ((res.status = 200)) {
       setcategorydata(res.data?.category);
     }
@@ -71,7 +71,7 @@ function Homepagebanner() {
   }, []);
 
   const getbannerimg = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getallhomebanner");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getallhomebanner");
     if ((res.status = 200)) {
       setBannerdata(res.data?.homebanner);
       console.log(res.data?.homebanner);
@@ -81,7 +81,7 @@ function Homepagebanner() {
   const deletebannerimg = async (id) => {
     axios({
       method: "post",
-      url: "http://api.vijayhomeservicebengaluru.in/api/userapp/deletehomebanner/" + id,
+      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deletehomebanner/" + id,
     })
       .then(function (response) {
         //handle success
@@ -151,7 +151,7 @@ function Homepagebanner() {
                           <td>
                             <img
                               className="header_logo"
-                              src={`http://api.vijayhomeservicebengaluru.in/homepagebanner/${element.banner}`}
+                              src={`https://api.vijayhomeservicebengaluru.in/homepagebanner/${element.banner}`}
                               width={"100px"}
                               height={"50px"}
                             />

@@ -58,7 +58,7 @@ function Dashboard() {
 
   const getappcustomer = async () => {
     let res = await axios.get(
-      "http://api.vijayhomeservicebengaluru.in/api/userapp/getuser"
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getuser"
     );
     if ((res.status = 200)) {
       setuserdata(res.data?.userdata);
@@ -67,7 +67,7 @@ function Dashboard() {
 
   const getapppauyments = async () => {
     let res = await axios.get(
-      "http://api.vijayhomeservicebengaluru.in/api/payment/service/paywithuserdata"
+      "https://api.vijayhomeservicebengaluru.in/api/payment/service/paywithuserdata"
     );
     if ((res.status = 200)) {
       setpaymentdata(res.data?.userdata);
@@ -82,7 +82,7 @@ function Dashboard() {
 
   const getservicemanagement = async () => {
     let res = await axios.get(
-      "http://api.vijayhomeservicebengaluru.in/api/userapp/getservices"
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getservices"
     );
     if ((res.status = 200)) {
       setServicedata(res.data?.service);

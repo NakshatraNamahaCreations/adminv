@@ -49,7 +49,7 @@ function Voucher() {
         const config = {
           url: "/userapp/addvoucher",
           method: "post",
-          baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+          baseURL: "https://api.vijayhomeservicebengaluru.in/api",
           headers: { "content-type": "application/json" },
           data: {
             category: category,
@@ -86,7 +86,7 @@ function Voucher() {
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
     if ((res.status = 200)) {
       setcategorydata(res.data?.category);
     }
@@ -94,7 +94,7 @@ function Voucher() {
  
 
   const getvoucher = async () => {
-    let res = await axios.get("http://api.vijayhomeservicebengaluru.in/api/userapp/getvoucher");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getvoucher");
     if ((res.status = 200)) {
       setvoucherdata(res.data?.voucher);
     }
@@ -102,7 +102,7 @@ function Voucher() {
   const deletevoucher = async (id) => {
     axios({
       method: "post",
-      url: "http://api.vijayhomeservicebengaluru.in/api/userapp/deletevoucher/" + id,
+      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deletevoucher/" + id,
     })
       .then(function (response) {
         //handle success

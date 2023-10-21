@@ -16,7 +16,7 @@ function Settings() {
       const config = {
         url: `/super/changepassword/${admin?._id}`,
         method: "post",
-        baseURL: "http://api.vijayhomeservicebengaluru.in/api",
+        baseURL: "https://api.vijayhomeservicebengaluru.in/api",
         headers: { "content-type": "application/json" },
         data: {
           oldPassword: oldPassword,
