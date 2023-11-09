@@ -181,7 +181,7 @@ function Dashboard() {
               <div className="col-md-6">
                 <div className="card home-col shadow p-3 mb-5  rounded">
                   <div className="card-body">
-                    <img src="rating.png" width="50px" />
+                    <img src="customer.png" width="50px" />
 
                     <div className="home-content">Customer</div>
                     <div className="home-desc">{userdata?.length}</div>

@@ -389,7 +389,7 @@ const [postsubdata, setpostsubdata] = useState([]);
 
         setserID("");
         // handelsavebtn();
-        // window.location.reload();
+        window.location.reload();
         // Clear localStorage and perform other necessary actions
       } else {
         console.log("Data update failed");

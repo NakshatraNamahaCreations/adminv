@@ -334,7 +334,7 @@ const [postsubdata, setpostsubdata] = useState([]);
     if ((res.status = 200)) {
       setServicedata(res.data?.service);
       setfilterdata(res.data?.service);
-      console.log(res.data?.service);
+   
     }
   };
 
@@ -345,7 +345,7 @@ const [postsubdata, setpostsubdata] = useState([]);
     })
       .then(function (response) {
         //handle success
-        console.log(response);
+       
         alert("Deleted successfully");
         window.location.reload();
       })
@@ -467,7 +467,7 @@ const [postsubdata, setpostsubdata] = useState([]);
   const addadvacedata = async (e) => {
     e.preventDefault();
 
-    console.log("existingData",existingData)
+   
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${serID}`,
@@ -624,8 +624,7 @@ const [postsubdata, setpostsubdata] = useState([]);
   });
 
   const handleDeleteCity = (id) => {
-    console.log("id----", id);
-    // Retrieve the existing data from local storage
+
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
     // Find the index of the item with the specified id
@@ -646,7 +645,7 @@ const [postsubdata, setpostsubdata] = useState([]);
     // Handle select event
     setsAddons(selectedList);
   };
-  console.log("sAddons", sAddons);
+
 
   const onRemoveCatagory = (selectedList, removedItem) => {
     // Handle remove event

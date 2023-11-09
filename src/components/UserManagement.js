@@ -39,7 +39,7 @@ function UserManagement() {
         console.log(error.response.data);
       });
   };
-  console.log(userdata);
+
   // Pagination logic
   const totalPages = Math.ceil(searchResults.length / itemsPerPage);
   const pageOptions = Array.from(
@@ -98,9 +98,9 @@ function UserManagement() {
                   <th className="table-head" scope="col">
                     User Contact No.
                   </th>
-                  <th className="table-head" scope="col">
+                  {/* <th className="table-head" scope="col">
                     Password
-                  </th>
+                  </th> */}
 
                   <th className="table-head" scope="col">
                     Action
@@ -114,7 +114,7 @@ function UserManagement() {
                     <td>{item.customerName}</td>
                     <td>{item.email}</td>
                     <td>{item.mainContact}</td>
-                    <td>{item.password}</td>
+                    {/* <td>{item.password}</td> */}
 
                     <td>
                       <Button

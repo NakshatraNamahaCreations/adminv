@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 
@@ -12,6 +13,7 @@ function Login() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const apiURL = process.env.REACT_APP_API_URL;
+  
 
   const Login = async (e) => {
     e.preventDefault();
@@ -25,7 +27,16 @@ function Login() {
       };
       await axios(config).then(function (response) {
         if (response.status === 200) {
-          alert("Login Success");
+          toast('🦄 Login succesfull', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
           sessionStorage.setItem("admin", JSON.stringify(response.data.user));
 
           window.location.assign("/home");
@@ -35,7 +46,17 @@ function Login() {
         }
       });
     } catch (error) {
-      alert("Invalid email and password");
+      
+      toast.error('Invalid email or password', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
     }
   };
 
@@ -46,6 +67,7 @@ function Login() {
         style={{ alignItems: "center", height: "100vh" }}
       >
         <div className="col-10" style={{ marginTop: "" }}>
+        <ToastContainer position="top-right"/>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <div style={{}} className="">
               <h1

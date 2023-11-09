@@ -15,30 +15,30 @@ const active1 = {
 };
 const inactive1 = { color: "black", backgroundColor: "white" };
 
-function Homepagebanner() {
+function EXBanner() {
   const [selected1, setSelected1] = useState(0);
-
-  const [banner, setBanner] = useState("");
-  const [category, setcategory] = useState("");
   const [categorydata, setcategorydata] = useState([]);
+  const [banner, setBanner] = useState("");
+  const [subcategory, setsubcategory] = useState("");
+
   const [bannerdata, setBannerdata] = useState([]);
   const formdata = new FormData();
-
+  const apiURL = process.env.REACT_APP_API_URL;
+  const imgURL = process.env.REACT_APP_IMAGE_API_URL;
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  console.log(banner);
   const postbanner = async (e) => {
     e.preventDefault();
-    console.log(banner);
+
     formdata.append("banner", banner);
-    formdata.append("category", category);
+    formdata.append("subcategory", subcategory);
 
     try {
       const config = {
-        url: "/userapp/addhomebanner",
+        url: "/userapp/addexbanner",
         method: "post",
         baseURL: "https://api.vijayhomeservicebengaluru.in/api",
 
@@ -47,7 +47,7 @@ function Homepagebanner() {
       await axios(config).then(function (response) {
         if (response.status === 200) {
           alert("Successfully Added");
-          window.location.assign("/homepagebanner");
+          window.location.assign("/exclusivebanner");
         }
       });
     } catch (error) {
@@ -55,14 +55,15 @@ function Homepagebanner() {
       alert("banner  Not Added");
     }
   };
+
   useEffect(() => {
     getcategory();
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
     if ((res.status = 200)) {
-      setcategorydata(res.data?.category);
+      setcategorydata(res.data?.subcategory);
     }
   };
 
@@ -71,21 +72,21 @@ function Homepagebanner() {
   }, []);
 
   const getbannerimg = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getallhomebanner");
+    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getallexbanner");
     if ((res.status = 200)) {
-      setBannerdata(res.data?.homebanner);
-    
+      setBannerdata(res.data?.banner);
+      console.log(res.data?.banner);
     }
   };
 
   const deletebannerimg = async (id) => {
     axios({
       method: "post",
-      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deletehomebanner/" + id,
+      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteexbanner/" + id,
     })
       .then(function (response) {
         //handle success
-       
+        console.log(response);
         alert("Deleted successfully");
         window.location.reload();
       })
@@ -105,7 +106,7 @@ function Homepagebanner() {
         <div className="row  set_margin ">
           <div>
             <div className="d-flex  mt-3">
-              <h4 style={{ color: "#FF0060" }}>Banners </h4>
+              <h4 style={{ color: "#FF0060" }}>Exclusive Banner</h4>
             </div>
           </div>
         </div>
@@ -118,7 +119,7 @@ function Homepagebanner() {
                   variant="danger"
                   onClick={handleShow}
                 >
-                  Add Banner img
+                  Add Images
                 </Button>
               </div>
             </div>
@@ -135,8 +136,7 @@ function Homepagebanner() {
                   <thead>
                     <tr>
                       <th>SI.No</th>
-                      <th>Category</th>
-
+                      <th>Subcategory</th>
                       <th>Banner Images</th>
                       <th>Action</th>
                     </tr>
@@ -146,12 +146,11 @@ function Homepagebanner() {
                       return (
                         <tr key={i}>
                           <td>{i + 1}</td>
-                          <td>{element.category}</td>
-
+                          <td>{element.subcategory}</td>
                           <td>
                             <img
                               className="header_logo"
-                              src={`https://api.vijayhomeservicebengaluru.in/homepagebanner/${element.banner}`}
+                              src={`https://api.vijayhomeservicebengaluru.in/exbanner/${element.banner}`}
                               width={"100px"}
                               height={"50px"}
                             />
@@ -184,31 +183,32 @@ function Homepagebanner() {
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Banners</Modal.Title>
+            <Modal.Title>Slider Image</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-          <div className="vhs-input-label mt-3">
-             <b>Select  file </b> <span className="text-danger"> *</span>
-            </div>
-            <input type="file" onChange={(e) => setBanner(e.target.files[0])} />
-            <div className="mt-3" style={{ fontSize: "13px" }}>
-              <b>Note :</b> width=300px,height=150px
-
-            </div>
-
             <div className="vhs-input-label mt-3">
-              Catagory <span className="text-danger"> *</span>
+              Sub-Catagory <span className="text-danger"> *</span>
             </div>
             <div className="group pt-1">
               <select
                 className="col-md-6 vhs-input-value"
-                onChange={(e) => setcategory(e.target.value)}
+                onChange={(e) => setsubcategory(e.target.value)}
               >
-                <option>-- Select category--</option>
+                <option>-- Select subcategory--</option>
                 {categorydata.map((i) => (
-                  <option value={i.category}>{i.category}</option>
+                  <option value={i.subcategory}>{i.subcategory}</option>
                 ))}
               </select>
+            </div>
+            <div className="group pt-1 mt-4">
+              <input
+                className="col-md-6 vhs-input-value"
+                type="file"
+                onChange={(e) => setBanner(e.target.files[0])}
+              />
+              <div className="mt-3" style={{ fontSize: "13px" }}>
+                <b>Note :</b> width=350px,height=200px
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -225,4 +225,4 @@ function Homepagebanner() {
   );
 }
 
-export default Homepagebanner;
+export default EXBanner;

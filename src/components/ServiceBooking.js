@@ -127,8 +127,8 @@ function ServiceBooking() {
               {servicedata.slice(0, displayedRows).map((item, index) => (
                 <tr className="user-tbale-body text-center">
                   <td>{index + 1}</td>
-                  <td>{item?.customer[0]?.customerName}</td>
-                  <td>{item?.customer[0]?.email}</td>
+                  <td>{item?.customerData[0]?.customerName}</td>
+                  <td>{item?.customerData[0]?.email}</td>
                   <td>
                     <div>
                       {item?.deliveryAddress.platNo},
@@ -136,7 +136,7 @@ function ServiceBooking() {
                     </div>
                     {item?.deliveryAddress.address}
                   </td>
-                  <td>{item?.customer[0]?.mainContact}</td>
+                  <td>{item?.customerData[0]?.mainContact}</td>
                   <td>{item?.service}</td>
                   <td>{item?.serviceCharge}</td>
 

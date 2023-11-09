@@ -38,6 +38,7 @@ import FEQ from "./components/FEQ";
 import ServiceAddOns from "./components/ServiceAddOns";
 import WhatsappAndPhone from "./components/WhatsappAndPhone";
 import WebsiteBanner from "./components/WebsiteBanner"
+import EXBanner from "./components/EXbanner";
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
         <Route path="/slots" element={<Slots />} />
         <Route path="/homepagebanner" element={<Homepagebanner />} />
         <Route path="/websitebanner" element={<WebsiteBanner />} />
+        <Route path="/exclusivebanner" element={<EXBanner />} />
 
 
         <Route path="/servicedetails/:id" element={<Servicedetails />} />

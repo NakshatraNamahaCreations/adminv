@@ -243,6 +243,7 @@ function Category() {
                 onChange={(e) => setsearch(e.target.value)}
               />
             </div>
+            
             <div className="mt-1 border">
               <DataTable
                 columns={columns}

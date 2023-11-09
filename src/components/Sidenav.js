@@ -74,7 +74,7 @@ function Sidenav() {
               <Link to="/spotlight" />
             </MenuItem>
             <MenuItem>
-            Website Banners
+              Website Banners
               <Link to="/websitebanner" />
             </MenuItem>
           </SubMenu>
@@ -91,6 +91,10 @@ function Sidenav() {
               WHy need vhs
               {/* WHy need */}
               <Link to="/feq" />
+            </MenuItem>
+            <MenuItem>
+              XO
+              <Link to="/exclusivebanner" />
             </MenuItem>
             <MenuItem>
               Whatsapp and Phone
