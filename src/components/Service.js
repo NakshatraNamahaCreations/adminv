@@ -12,7 +12,6 @@ import InputGroup from "react-bootstrap/InputGroup";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import Table from "react-bootstrap/Table";
-import Multiselect from "multiselect-react-dropdown";
 
 import { useNavigate } from "react-router-dom";
 
@@ -28,7 +27,7 @@ function Services() {
   const morepriceData = JSON.parse(localStorage.getItem("plansprice")) || [];
 
   const navigate = useNavigate();
-const [postsubdata, setpostsubdata] = useState([]);
+  const [postsubdata, setpostsubdata] = useState([]);
   const [citydata, setcitydata] = useState([]);
   const [selected, setSelected] = useState(false);
   const [categorydata, setcategorydata] = useState([]);
@@ -94,6 +93,12 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const [showEdit, setShowEdit] = useState(false);
   const [editSubcategory, setEditSubcategory] = useState({});
+
+  const [isEnabled, setIsEnabled] = useState(false);
+  const handleSwitchToggle = (event) => {
+    setIsEnabled(event.target.checked);
+  };
+
   const [Servicesno, setServicesno] = useState(
     new Array(slotsdata.length).fill("")
   );
@@ -222,14 +227,18 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getslots = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getslots"
+    );
     if ((res.status = 200)) {
       setslotsdata(res.data?.slots);
     }
   };
 
   const gettitle = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle"
+    );
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
@@ -241,13 +250,17 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getallsubcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat"
+    );
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/getcategory"
+    );
     if ((res.status = 200)) {
       setcatdata(res.data?.category);
     }
@@ -330,22 +343,25 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getservicemanagement = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getservices");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getservices"
+    );
     if ((res.status = 200)) {
       setServicedata(res.data?.service);
       setfilterdata(res.data?.service);
-   
     }
   };
 
   const deletecategory = async (id) => {
     axios({
       method: "post",
-      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteservices/" + id,
+      url:
+        "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteservices/" +
+        id,
     })
       .then(function (response) {
         //handle success
-       
+
         alert("Deleted successfully");
         window.location.reload();
       })
@@ -428,13 +444,51 @@ const [postsubdata, setpostsubdata] = useState([]);
         </div>
       ),
     },
+    {
+      name: "OTHR Active",
+      cell: (row) => (
+        <div>
+          <Form>
+            <Form.Check
+              type="switch"
+              id={`custom-switch-${row?._id}`}
+              checked={row?.activeStatus} // Set the checked attribute based on activeStatus
+              onChange={(event) =>
+                handleSwitchToggle1(row?._id, event.target.checked)
+              }
+            />
+          </Form>
+        </div>
+      ),
+    },
   ];
+
+  const handleSwitchToggle1 = async (rowId, isActive) => {
+  
+    try {
+      const config = {
+        url: `/userapp/updateenabledisble/${rowId}`,
+        method: 'post',
+        baseURL: 'https://api.vijayhomeservicebengaluru.in/api',
+        headers: { 'content-type': 'application/json' },
+        data: {
+          activeStatus: isActive
+        },
+      };
+      const response = await axios(config);
+      if (response.status === 200) {
+        window.location.reload(); // Reloading on successful update
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Not Added');
+    }
+  };
 
   const edit = (data) => {
     setdata(data);
     handleShow(true);
   };
-
 
   useEffect(() => {
     postsubcategory();
@@ -450,7 +504,6 @@ const [postsubdata, setpostsubdata] = useState([]);
 
     if ((res.status = 200)) {
       setpostsubdata(res.data?.subcategory);
-      
     }
   };
   useEffect(() => {
@@ -458,7 +511,9 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getcity = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/master/getcity");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/master/getcity"
+    );
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
       console.log(res.data?.mastercity);
@@ -467,7 +522,6 @@ const [postsubdata, setpostsubdata] = useState([]);
   const addadvacedata = async (e) => {
     e.preventDefault();
 
-   
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${serID}`,
@@ -624,7 +678,6 @@ const [postsubdata, setpostsubdata] = useState([]);
   });
 
   const handleDeleteCity = (id) => {
-
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
     // Find the index of the item with the specified id
@@ -645,7 +698,6 @@ const [postsubdata, setpostsubdata] = useState([]);
     // Handle select event
     setsAddons(selectedList);
   };
-
 
   const onRemoveCatagory = (selectedList, removedItem) => {
     // Handle remove event
@@ -1214,7 +1266,11 @@ const [postsubdata, setpostsubdata] = useState([]);
                           </Form.Select>
                         </Form.Group>
 
-                        <Form.Group as={Col} controlId="formGridEmail" className="mt-3">
+                        <Form.Group
+                          as={Col}
+                          controlId="formGridEmail"
+                          className="mt-3"
+                        >
                           <Form.Label>Rating</Form.Label>
                           <Form.Control
                             type="text"

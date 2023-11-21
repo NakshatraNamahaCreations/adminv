@@ -16,10 +16,10 @@ const active1 = {
 const inactive1 = { color: "black", backgroundColor: "white" };
 
 function EXBanner() {
-  const [selected1, setSelected1] = useState(0);
+  const [Height, setHeight] = useState(0);
   const [categorydata, setcategorydata] = useState([]);
   const [banner, setBanner] = useState("");
-  const [subcategory, setsubcategory] = useState("");
+  const [Link, setLink] = useState("");
 
   const [bannerdata, setBannerdata] = useState([]);
   const formdata = new FormData();
@@ -34,7 +34,9 @@ function EXBanner() {
     e.preventDefault();
 
     formdata.append("banner", banner);
-    formdata.append("subcategory", subcategory);
+    formdata.append("Link", Link);
+    formdata.append("Height", Height);
+
 
     try {
       const config = {
@@ -61,7 +63,9 @@ function EXBanner() {
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat"
+    );
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
@@ -72,7 +76,9 @@ function EXBanner() {
   }, []);
 
   const getbannerimg = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getallexbanner");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getallexbanner"
+    );
     if ((res.status = 200)) {
       setBannerdata(res.data?.banner);
       console.log(res.data?.banner);
@@ -82,7 +88,9 @@ function EXBanner() {
   const deletebannerimg = async (id) => {
     axios({
       method: "post",
-      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteexbanner/" + id,
+      url:
+        "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteexbanner/" +
+        id,
     })
       .then(function (response) {
         //handle success
@@ -119,7 +127,7 @@ function EXBanner() {
                   variant="danger"
                   onClick={handleShow}
                 >
-                  Add Images
+                  ADD
                 </Button>
               </div>
             </div>
@@ -136,8 +144,9 @@ function EXBanner() {
                   <thead>
                     <tr>
                       <th>SI.No</th>
-                      <th>Subcategory</th>
-                      <th>Banner Images</th>
+                      <th>Link</th>
+                      <th> Images</th>
+                      <th> Height</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -146,7 +155,7 @@ function EXBanner() {
                       return (
                         <tr key={i}>
                           <td>{i + 1}</td>
-                          <td>{element.subcategory}</td>
+                          <td>{element.Link}</td>
                           <td>
                             <img
                               className="header_logo"
@@ -155,7 +164,7 @@ function EXBanner() {
                               height={"50px"}
                             />
                           </td>
-
+                          <td>{element.Height}</td>
                           <td>
                             <Button
                               style={{
@@ -183,32 +192,39 @@ function EXBanner() {
       <>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Slider Image</Modal.Title>
+            <Modal.Title>ADD</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="vhs-input-label mt-3">
-              Sub-Catagory <span className="text-danger"> *</span>
+              Link <span className="text-danger"> *</span>
             </div>
             <div className="group pt-1">
-              <select
+              <input
                 className="col-md-6 vhs-input-value"
-                onChange={(e) => setsubcategory(e.target.value)}
-              >
-                <option>-- Select subcategory--</option>
-                {categorydata.map((i) => (
-                  <option value={i.subcategory}>{i.subcategory}</option>
-                ))}
-              </select>
+                type="text"
+                onChange={(e) => setLink(e.target.value)}
+              />
             </div>
+            <div className="vhs-input-label mt-3">
+              Height <span className="text-danger"> *</span>
+            </div>
+            <div className="group pt-1">
+              <input
+                className="col-md-6 vhs-input-value"
+                type="text"
+                onChange={(e) => setHeight(e.target.value)}
+              />
+            </div>
+            <span style={{ fontSize: "12px", fontWeight: "bold" }}>
+              Ex-200   (its take pixels)
+            </span>
             <div className="group pt-1 mt-4">
               <input
                 className="col-md-6 vhs-input-value"
                 type="file"
                 onChange={(e) => setBanner(e.target.files[0])}
               />
-              <div className="mt-3" style={{ fontSize: "13px" }}>
-                <b>Note :</b> width=350px,height=200px
-              </div>
+              
             </div>
           </Modal.Body>
           <Modal.Footer>
