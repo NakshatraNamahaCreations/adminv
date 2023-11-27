@@ -15,7 +15,6 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import Table from "react-bootstrap/Table";
 
-
 function Servicedetails() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -88,7 +87,7 @@ function Servicedetails() {
   const [serviceExcludes, setserviceExcludes] = useState(
     Servicedata[0]?.serviceExcludes
   );
-const [postsubdata, setpostsubdata] = useState([]);
+  const [postsubdata, setpostsubdata] = useState([]);
   const [pName, setpName] = useState("");
   const [pPrice, setpPrice] = useState("");
   const [pofferprice, setpofferprice] = useState("");
@@ -119,14 +118,18 @@ const [postsubdata, setpostsubdata] = useState([]);
   const [editServicetitle, setEditServicetitle] = useState("");
   const [editServicebelow, setEditServicebelow] = useState("");
   const [edithomePagetitle, setEdithomePagetitle] = useState("");
-
+  const [Inimg, setInimg] = useState("");
+  const [Eximg, setEximg] = useState("");
+  const [Desimg, setDesimg] = useState("");
   const [editDescriptions, setEditDescriptions] = useState([]);
 
   const [newServiceExcludes, setnewServiceExcludes] = useState("");
   const [newServiceIncludes, setnewServiceIncludes] = useState("");
   const [editServiceIncludes, setEditServiceIncludes] = useState([]);
   const [editServiceExcludes, setEditServiceExcludes] = useState([]);
-  const [editServiceDirection, setEditServiceDirection] = useState("");
+  const [editServiceDirection, setEditServiceDirection] = useState(
+    Servicedata[0]?.serviceDirection || ""
+  );
   const [editServiceGst, setEditServiceGst] = useState("");
   const [Sdata, setSdata] = useState([]);
 
@@ -188,7 +191,7 @@ const [postsubdata, setpostsubdata] = useState([]);
       if (res.status === 200) {
         const serviceData = res.data?.service.filter((i) => i._id === id);
         setServicedata(serviceData);
-        console.log("serviceData", serviceData);
+
         setSdata(res.data?.service);
         // Convert the existing array of strings to an array of objects
         setEditDescriptions(serviceData[0]?.serviceDesc);
@@ -200,10 +203,27 @@ const [postsubdata, setpostsubdata] = useState([]);
     }
   };
 
+  useEffect(() => {
+    getservicedireaction();
+  }, []);
+
+  const [SD, setSD] = useState([]);
+
+  const getservicedireaction = async () => {
+    try {
+      const res = await axios.get(
+        `https://api.vijayhomeservicebengaluru.in/api/userapp/getserviceDirection`
+      );
+      if (res.status === 200) {
+        setSD(res.data?.services);
+      }
+    } catch (error) {
+      console.error("Error fetching service data:", error);
+    }
+  };
+
   const handleAddDesc = () => {
     if (newDescription) {
-      console.log("newDescription", newDescription);
-      // const newDescriptionObject = { text: newDescription };
       let arr = [...editDescriptions];
       arr.push({ text: newDescription, image: null });
       setEditDescriptions(arr);
@@ -216,8 +236,6 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const handleAddIncludes = () => {
     if (newServiceIncludes) {
-      console.log("newServiceIncludes", newServiceIncludes);
-      // const newDescriptionObject = { text: newDescription };
       let arr = [...editServiceIncludes];
       arr.push({ text: newServiceIncludes, image: null });
       setEditServiceIncludes(arr);
@@ -230,8 +248,6 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const handleAddExcludes = () => {
     if (newServiceExcludes) {
-      console.log("newServiceExcludes", newServiceExcludes);
-      // const newDescriptionObject = { text: newDescription };
       let arr = [...editServiceExcludes];
       arr.push({ text: newServiceExcludes, image: null });
       setEditServiceExcludes(arr);
@@ -244,45 +260,30 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const handleEditDesc = (index, editedDescription) => {
     const updatedDescriptions = [...editDescriptions];
-    console.log(
-      "updateddescriptions",
-      editDescriptions,
-      "editeddescription",
-      editedDescription
-    );
+
     updatedDescriptions[index].text = editedDescription;
     setEditDescriptions(updatedDescriptions);
   };
 
   const handleEditIncludes = (index, editServiceInclude) => {
     const updatedInculdes = [...editServiceIncludes];
-    console.log(
-      "updatedInculdes",
-      editServiceIncludes,
-      "editServiceInclude",
-      editServiceInclude
-    );
+
     updatedInculdes[index].text = editServiceInclude;
     setEditServiceIncludes(updatedInculdes);
   };
 
   const handleEditExcludes = (index, editServiceExclude) => {
     const updatedExculdes = [...editServiceExcludes];
-    console.log(
-      "updatedExculdes",
-      editServiceExcludes,
-      "editServiceExclude",
-      editServiceExclude
-    );
+
     updatedExculdes[index].text = editServiceExclude;
     setEditServiceExcludes(updatedExculdes);
   };
 
   const handleDeleteDesc = (index) => {
     const updatedDescriptions = [...editDescriptions];
-    console.log("edit", editDescriptions);
+
     updatedDescriptions.splice(index, 1);
-    console.log("update", updatedDescriptions);
+
     setTimeout(() => {
       setEditDescriptions(updatedDescriptions);
     }, 100);
@@ -290,9 +291,9 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const handleDeleteIncludes = (index) => {
     const updatedIncludes = [...editServiceIncludes];
-    console.log("edit", editServiceIncludes);
+
     updatedIncludes.splice(index, 1);
-    console.log("update", updatedIncludes);
+
     setTimeout(() => {
       setEditServiceIncludes(updatedIncludes);
     }, 100);
@@ -300,9 +301,9 @@ const [postsubdata, setpostsubdata] = useState([]);
 
   const handleDeleteExcludes = (index) => {
     const updatedServiceExcludes = [...editServiceExcludes];
-    console.log("edit", editServiceExcludes);
+
     updatedServiceExcludes.splice(index, 1);
-    console.log("update", updatedServiceExcludes);
+
     setTimeout(() => {
       setEditServiceExcludes(updatedServiceExcludes);
     }, 100);
@@ -314,13 +315,17 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getallcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat"
+    );
     if ((res.status = 200)) {
       setcategorydata(res.data?.subcategory);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/getcategory"
+    );
     if ((res.status = 200)) {
       setcatdata(res.data?.category);
     }
@@ -340,13 +345,11 @@ const [postsubdata, setpostsubdata] = useState([]);
 
     if ((res.status = 200)) {
       setpostsubdata(res.data?.subcategory);
-      
     }
   };
   useEffect(() => {
     getsubcategory();
   }, [editSubcategory]);
-
 
   const getsubcategory = async () => {
     let res = await axios.post(
@@ -358,12 +361,10 @@ const [postsubdata, setpostsubdata] = useState([]);
 
     if ((res.status = 200)) {
       setpostservicename(res.data?.subcategory);
-      console.log("service", res.data?.subcategory);
     }
   };
 
   const addadvacedata = async () => {
-    console.log("existingData------",[...existingData, ...Servicedata[0]?.store_slots])
     try {
       const config = {
         url: `/userapp/updateadvanceddata/${id}`,
@@ -380,8 +381,6 @@ const [postsubdata, setpostsubdata] = useState([]);
       const response = await axios(config);
 
       if (response.status === 200) {
-        console.log("Data updated successfully");
-
         localStorage.removeItem("Store_Slots");
         localStorage.removeItem("plans");
         localStorage.removeItem("homepagetitle");
@@ -407,7 +406,9 @@ const [postsubdata, setpostsubdata] = useState([]);
   }, []);
 
   const getcity = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/master/getcity");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/master/getcity"
+    );
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
     }
@@ -439,7 +440,6 @@ const [postsubdata, setpostsubdata] = useState([]);
   const handleSaveplans = () => {
     // Retrieve existing data from local storage or initialize an empty array
     const existingData = JSON.parse(localStorage.getItem("plans")) || [];
-    console.log("Existing Data:", existingData);
 
     // Add new data to the array
     const newData = { Plans };
@@ -455,12 +455,10 @@ const [postsubdata, setpostsubdata] = useState([]);
     // Retrieve existing data from local storage or initialize an empty array
     const homepagetitleData =
       JSON.parse(localStorage.getItem("homepagetitle")) || [];
-    console.log("Existing Data:", existingData);
 
     // Add new data to the array
     const newData = { titleName };
     homepagetitleData.push(newData);
-    console.log("New Data:", newData);
 
     // Update local storage with the updated array
     localStorage.setItem("homepagetitle", JSON.stringify(homepagetitleData));
@@ -480,15 +478,12 @@ const [postsubdata, setpostsubdata] = useState([]);
       servicePeriod,
     };
     morepriceData.push(newData);
-    console.log("New Data:", newData);
 
     // Update local storage with the updated array
     localStorage.setItem("plansprice", JSON.stringify(morepriceData));
     handleClose3();
   };
   const handleDeleteCity = (id) => {
-    console.log("id----", id);
-    // Retrieve the existing data from local storage
     const existingData = JSON.parse(localStorage.getItem("Store_Slots")) || [];
 
     // Find the index of the item with the specified id
@@ -529,30 +524,30 @@ const [postsubdata, setpostsubdata] = useState([]);
     dataByCity[slotCity].push({ startTime, endTime, Servicesno });
   });
 
-  let currentCity = null;
-
   useEffect(() => {
     getslots();
     gettitle();
   }, []);
 
   const getslots = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getslots");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getslots"
+    );
     if ((res.status = 200)) {
       setslotsdata(res.data?.slots);
     }
   };
 
   const gettitle = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle"
+    );
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
   };
 
   const handleDeleteClick = async (slotid) => {
-    // Change the parameter to directly accept slotid
-    console.log("slotid", slotid); // Log the slotid directly
     try {
       const response = await axios.delete(
         `https://api.vijayhomeservicebengaluru.in/api/userapp/deleteStoreSlot/${sid}/${slotid}`
@@ -560,7 +555,7 @@ const [postsubdata, setpostsubdata] = useState([]);
 
       if (response.status === 200) {
         // Successful deletion
-        console.log("Item deleted successfully");
+
         alert("Item deleted successfully");
         window.location.assign(`/servicedetails/${sid}`);
       } else {
@@ -658,6 +653,17 @@ const [postsubdata, setpostsubdata] = useState([]);
       if (Image) {
         formdata.append("serviceImg", Image);
       }
+
+      if (Inimg) {
+        formdata.append("Inimg", Inimg);
+      }
+      if (Eximg) {
+        formdata.append("Eximg", Eximg);
+      }
+      if (Desimg) {
+        formdata.append("Desimg", Desimg);
+      }
+
       const config = {
         url: `/userapp/updateservices/${serviceId}`,
         method: "put",
@@ -697,7 +703,6 @@ const [postsubdata, setpostsubdata] = useState([]);
     setCheckboxStates(newCheckboxStates);
   };
 
-  console.log("Servicedata[0]?.category", Servicedata[0]?.category);
   return (
     <div div className="row">
       <div className="col-md-2">
@@ -765,11 +770,9 @@ const [postsubdata, setpostsubdata] = useState([]);
                     onChange={(e) => setEditCategory(e.target.value)}
                     defaultValue={Servicedata[0]?.category}
                   >
-                    {/* <option>{Servicedata[0]?.Subcategory}</option> */}
+                    <option>{Servicedata[0]?.category}</option>
                     {catdata.map((item) => (
-                      <option value={item.category}>
-                        {item.category}
-                      </option>
+                      <option value={item.category}>{item.category}</option>
                     ))}
                   </Form.Select>
                 </InputGroup>
@@ -783,7 +786,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                     onChange={(e) => setEditSubcategory(e.target.value)}
                     defaultValue={Servicedata[0]?.Subcategory}
                   >
-                    {/* <option>{Servicedata[0]?.Subcategory}</option> */}
+                    <option>{Servicedata[0]?.Subcategory}</option>
                     {postsubdata.map((item) => (
                       <option value={item.subcategory}>
                         {item.subcategory}
@@ -873,7 +876,7 @@ const [postsubdata, setpostsubdata] = useState([]);
                         // flexWrap: "wrap",
                       }}
                     >
-                         <table>
+                      <table>
                         <tbody>
                           <table>
                             <tbody>
@@ -1155,7 +1158,17 @@ const [postsubdata, setpostsubdata] = useState([]);
                       <Form.Label>
                         Service Description
                         <span className="text-danger"> *</span>
+                        <img
+                          style={{ width: "15px", height: "15px" }}
+                          src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Eximg}`}
+                        />
                       </Form.Label>
+
+                      <Form.Control
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setDesimg(e.target.files[0])}
+                        />
                       {editDescriptions.map((description, index) => (
                         <>
                           <Form.Control
@@ -1216,7 +1229,11 @@ const [postsubdata, setpostsubdata] = useState([]);
                           style={{ width: "15px", height: "15px" }}
                           src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Desimg}`}
                         />
-                        {/* {editServiceIncludes?.serviceIncludes.map((i) => ( */}
+                        <Form.Control
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setInimg(e.target.files[0])}
+                        />
                         {editServiceIncludes.map((include, index) => (
                           <div>
                             <Form.Control
@@ -1277,7 +1294,11 @@ const [postsubdata, setpostsubdata] = useState([]);
                           style={{ width: "15px", height: "15px" }}
                           src={`https://api.vijayhomeservicebengaluru.in/service/${Servicedata[0]?.Inimg}`}
                         />
-                        {/* {Servicedata[0]?.serviceExcludes.map((i) => ( */}
+                        <Form.Control
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setEximg(e.target.files[0])}
+                        />
                         {editServiceExcludes.map((excludes, index) => (
                           <div>
                             <Form.Control
@@ -1337,9 +1358,9 @@ const [postsubdata, setpostsubdata] = useState([]);
                             onChange={(e) =>
                               setEditServiceDirection(e.target.value)
                             }
-                            defaultValue={Servicedata[0]?.serviceDirection}
+                            value={editServiceDirection} // Set the value here
                           >
-                            <option>--select --</option>
+                            <option>--select--</option>
 
                             <option value="Enquiry">Enquiry</option>
                             <option value="Survey">Survey</option>

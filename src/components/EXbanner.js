@@ -81,7 +81,7 @@ function EXBanner() {
     );
     if ((res.status = 200)) {
       setBannerdata(res.data?.banner);
-      console.log(res.data?.banner);
+      
     }
   };
 

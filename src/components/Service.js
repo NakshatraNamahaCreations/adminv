@@ -452,17 +452,19 @@ function Services() {
             <Form.Check
               type="switch"
               id={`custom-switch-${row?._id}`}
-              checked={row?.activeStatus} // Set the checked attribute based on activeStatus
+              checked={row?.activeStatus || false}
               onChange={(event) =>
                 handleSwitchToggle1(row?._id, event.target.checked)
               }
             />
           </Form>
+          {console.log(row?.activeStatus,row.serviceName)}
         </div>
       ),
     },
   ];
 
+  console.log("filterdata",filterdata)
   const handleSwitchToggle1 = async (rowId, isActive) => {
   
     try {
@@ -516,7 +518,7 @@ function Services() {
     );
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
-      console.log(res.data?.mastercity);
+ 
     }
   };
   const addadvacedata = async (e) => {

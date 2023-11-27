@@ -4,13 +4,14 @@ import Sidenav from "./Sidenav";
 import Header from "./Header";
 import DataTable from "react-data-table-component";
 import Modal from "react-bootstrap/Modal";
+import Multiselect from "multiselect-react-dropdown";
 
 function Subcategory() {
   const [data1, setdata1] = useState([]);
   const [category, setcategory] = useState("");
   const [subcategory, setsubcategory] = useState("");
   const [search, setsearch] = useState("");
-
+  const [ServiceData, setServiceData] = useState([]);
   const [subcategoryImg, setsubcategoryImg] = useState("");
   const [filterdata, setfilterdata] = useState([]);
   const [data, setdata] = useState([]);
@@ -22,8 +23,12 @@ function Subcategory() {
   const [editSubcategoryImage, setEditSubcategoryImage] = useState("");
   const [editSubcategoryVideo, setEditSubcategoryVideo] = useState("");
   const [edithomePagetitle, setedithomePagetitle] = useState("");
-
   const [editSubcategoryData, setEditSubcategoryData] = useState({});
+  const [othservice, setothservice] = useState([]);
+  const [othservice1, setothservice1] = useState(
+    editSubcategoryData?.othservice || []
+  );
+
   const [homePagetitle, sethomePagetitle] = useState("");
 
   const formdata = new FormData();
@@ -44,12 +49,14 @@ function Subcategory() {
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/getcategory");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/getcategory"
+    );
     if ((res.status = 200)) {
       setdata1(res.data?.category);
-      console.log(res.data?.category);
     }
   };
+
   const postsubcategory = async (e) => {
     e.preventDefault();
 
@@ -61,6 +68,7 @@ function Subcategory() {
       formdata.append("subcatimg", subcategoryImg);
       formdata.append("subcatvideo", subcatvideo);
       formdata.append("homePagetitle", homePagetitle);
+      formdata.append("othservice",  JSON.stringify(othservice));
 
       console.log("formdata", formdata);
       try {
@@ -103,13 +111,17 @@ function Subcategory() {
   };
 
   const getsubcategory = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/getappsubcat"
+    );
     if ((res.status = 200)) {
       console.log(res);
       setsubcategorydata(res.data?.subcategory);
       setfilterdata(res.data?.subcategory);
     }
   };
+// const otgerServiceNAME = othservice1.Map(e =>e.name)
+
 
   const editservices = async (e) => {
     e.preventDefault();
@@ -117,7 +129,7 @@ function Subcategory() {
       formdata.append("category", editCategory);
       formdata.append("subcategory", editSubcategory);
       formdata.append("homePagetitle", edithomePagetitle);
-
+      formdata.append("othservice",  JSON.stringify(othservice1));
       if (editSubcategoryImage) {
         formdata.append("subcatimg", editSubcategoryImage);
       }
@@ -218,7 +230,9 @@ function Subcategory() {
   const deleteservices = async (id) => {
     axios({
       method: "post",
-      url: "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteappsubcat/" + id,
+      url:
+        "https://api.vijayhomeservicebengaluru.in/api/userapp/deleteappsubcat/" +
+        id,
     })
       .then(function (response) {
         //handle success
@@ -237,11 +251,73 @@ function Subcategory() {
   }, []);
 
   const gettitle = async () => {
-    let res = await axios.get("https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle");
+    let res = await axios.get(
+      "https://api.vijayhomeservicebengaluru.in/api/userapp/gettitle"
+    );
     if ((res.status = 200)) {
       settitledata(res.data?.homepagetitle);
     }
   };
+
+  useEffect(() => {
+    getServiceByCategory();
+  }, [category]);
+
+  const getServiceByCategory = async () => {
+
+    try {
+      let res = await axios.post(`https://api.vijayhomeservicebengaluru.in/api/userapp/getservicebycategory/`, {
+        category
+      });
+      if (res.status === 200) {
+        setServiceData(res.data?.serviceData);
+      } else {
+        setServiceData([]);
+      }
+    } catch (error) {
+      console.log("err", error);
+    }
+  };
+
+  const [ServiceData1, setServiceData1] = useState([])
+  useEffect(() => {
+    getServiceByCategory1();
+  }, [editCategory,editSubcategoryData,show]);
+
+
+  const getServiceByCategory1 = async () => {
+
+    try {
+      let res = await axios.post(`https://api.vijayhomeservicebengaluru.in/api/userapp/getservicebycategory/`, {
+       category :editSubcategoryData.category
+      });
+      if (res.status === 200) {
+        setServiceData1(res.data?.serviceData);
+      } else {
+        setServiceData1([]);
+      }
+    } catch (error) {
+      console.log("err", error);
+    }
+  };
+
+
+  const onSelectCatagory = (selectedList, selectedItem) => {
+    // Handle select event
+    setothservice(selectedList);
+  };
+
+  const onEditCatagory = (selectedList, selectedItem) => {
+
+    setothservice1(selectedList);
+  };
+
+  const onRemoveCatagory = (selectedList, removedItem) => {
+    // Handle remove event
+    setothservice(selectedList);
+  };
+
+  console.log("editSubcategoryData?.othservice ",editSubcategoryData?.othservice )
 
   return (
     <div div className="row">
@@ -337,6 +413,20 @@ function Subcategory() {
                           ))}
                         </select>
                       </div>
+                    </div>
+                    <div className="col-md-4 mt-4">
+                      <Multiselect
+                        className="mt-3"
+                        options={ServiceData.map((item) => ({
+                          name: item.serviceName,
+                        }))}
+                        defaultValue="Select Catagory"
+                        selectedValues={othservice}
+                        onSelect={onSelectCatagory}
+                        onRemove={onRemoveCatagory}
+                        displayValue="name"
+                        showCheckbox={true}
+                      />{" "}
                     </div>
                   </div>
                   <div className="row pt-3 justify-content-center">
@@ -436,9 +526,9 @@ function Subcategory() {
                         setEditSubcategoryImage(e.target.files[0])
                       }
                     />
-                     <p style={{ fontSize: "12px" }}>
-                          <b>format(jpg,png)</b>
-                        </p>
+                    <p style={{ fontSize: "12px" }}>
+                      <b>format(jpg,png)</b>
+                    </p>
                   </div>
                 </div>
 
@@ -469,7 +559,19 @@ function Subcategory() {
                     </select>
                   </div>
                 </div>
-
+                <div className="col-md-12 mt-4">
+                  <Multiselect
+                    className="mt-3"
+                    options={ServiceData1.map((item) => ({
+                      name: item.serviceName,
+                    }))}
+                    selectedValues={editSubcategoryData?.othservice}
+                    onSelect={onEditCatagory}
+                    onRemove={onRemoveCatagory}
+                    displayValue="name"
+                    showCheckbox={true}
+                  />
+                </div>
                 <div className="row pt-3">
                   <div className="col-md-2">
                     <button className="vhs-button" onClick={editservices}>
